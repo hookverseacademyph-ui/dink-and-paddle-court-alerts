@@ -1,11 +1,16 @@
 import {activePickleballCourts,freeCourtsForSession} from './_court-rules.js';
 export const VENUES=[{"id": "5812c8bc-dfe5-4e9f-9b7f-59da95a76efb", "name": "PCKLD.", "address": "", "trackedCity": "Bacoor"}, {"id": "fbc00051-e9e1-4ecd-a39f-89ac01a30aaa", "name": "The Pickle Prime - Bacoor", "address": "", "trackedCity": "Bacoor"}, {"id": "cb5e7b37-1719-4a18-963e-06c02ff3d448", "name": "Garahe Pickleball Court", "address": "", "trackedCity": "Imus"}, {"id": "0cde9299-793e-40ce-a1a2-7c1d374d542c", "name": "Assenda", "address": "", "trackedCity": "Kawit"}, {"id": "af6cb5a6-7262-4502-9f65-b35de3a026f1", "name": "Dink ‘n Smash", "address": "", "trackedCity": "Kawit"}, {"id": "eec48bf0-423a-4824-bc9a-61fa57d672d6", "name": "The Court BLVD", "address": "", "trackedCity": "Bacoor"}, {"id": "d5c4c969-3ea4-434a-8d89-3a14e44d03b6", "name": "Courthaus", "address": "", "trackedCity": "Bacoor"}];
 const DAYS_AHEAD=14, ALL_TIMES=false, TRACKED_VENUES=[], CITY_NAMES=['Bacoor','Imus','Kawit'];
-async function providerJson(urlPath) {
-  const response=await fetch('https://app.sports360.ph'+urlPath,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(18000)});
-  if(!response.ok)throw new Error('Booking provider unavailable');
-  const data=await response.json();
-  return data;
+export async function providerJson(urlPath) {
+  let response;
+  try {
+    response=await fetch('https://app.sports360.ph'+urlPath,{
+      headers:{Accept:'application/json','Accept-Language':'en-US,en;q=0.9','User-Agent':'Mozilla/5.0'},
+      signal:AbortSignal.timeout(25000)
+    });
+  }catch(error){throw new Error(error.name==='TimeoutError'?'UPSTREAM_TIMEOUT':'UPSTREAM_CONNECTION');}
+  if(!response.ok)throw new Error('UPSTREAM_HTTP_'+response.status);
+  try {return await response.json();}catch{throw new Error('UPSTREAM_NON_JSON');}
 }
 function pad(n) {
   return String(n).padStart(2, '0');

@@ -567,7 +567,10 @@
           for(let attempt=0;attempt<2;attempt++) {
             try {
               const response=await fetch('/api/venue?hub='+encodeURIComponent(id),{cache:'no-store',signal:AbortSignal.timeout(60000)});
-              if(!response.ok)throw new Error('HTTP '+response.status);
+              if(!response.ok){
+                let diagnostic={};try{diagnostic=await response.json();}catch{}
+                throw new Error('HTTP '+response.status+(diagnostic.code?' / '+diagnostic.code:'')+(diagnostic.region?' / '+diagnostic.region:''));
+              }
               const data=await response.json();
               if(data.verificationVersion!==2 || !Array.isArray(data.openings))throw new Error('Invalid feed');
               return data;

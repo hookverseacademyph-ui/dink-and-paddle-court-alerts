@@ -29,9 +29,10 @@ export async function handle(request, env, ctx, scrape = scrapeVenue, cache = gl
       ctx.waitUntil(cache.put(cacheKey, stored).catch(() => {}));
     }
     return response;
-  } catch {
+  } catch (error) {
     // Failed or malformed calendars never become empty calendars or cached availability.
-    return json({ error: 'Live booking provider is unavailable. Please try Check now again shortly.' }, 503);
+    const code=/^UPSTREAM_(HTTP_\d{3}|TIMEOUT|CONNECTION|NON_JSON)$/.test(error.message) ? error.message : 'CALENDAR_CHECK_FAILED';
+    return json({ error: 'Live booking provider is unavailable.', code, region: request.cf?.colo || 'unknown', version:'feed-3' }, 503);
   }
 }
 
