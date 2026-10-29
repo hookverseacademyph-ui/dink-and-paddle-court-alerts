@@ -77,7 +77,9 @@ async function main() {
   if(test){await telegram('sendMessage',{chat_id:process.env.TELEGRAM_CHAT_ID,text:'✅ Dink and Paddle Telegram connection works. This is a setup test, not a court-availability alert.',disable_notification:false});console.log('Test message sent to your personal chat.');return;}
   if(!Array.isArray(config.favorites)||!config.favorites.length || config.favorites.some(v=>!/^[a-f0-9-]{36}$/.test(v.hubId||'')))throw new Error('Add valid favorite venue hub IDs in watchlist.json.');
   const out=path.join(HERE,'openings.json');
-  const args=[path.join(HERE,'scrape-sports360.mjs'),'--out',out];for(const v of config.favorites)args.push('--hub',v.hubId);
+  const daysAhead = config.daysAhead ?? 14;
+  if (!Number.isInteger(daysAhead) || daysAhead < 1 || daysAhead > 30) throw new Error('daysAhead must be an integer from 1 to 30.');
+  const args=[path.join(HERE,'scrape-sports360.mjs'),'--days',String(daysAhead),'--out',out];for(const v of config.favorites)args.push('--hub',v.hubId);
   try{const {stdout}=await promisify(execFile)(process.execPath,args,{cwd:HERE,timeout:12*60000,maxBuffer:4e6,windowsHide:true});console.log(stdout);}catch{throw new Error('Public availability scrape failed. No stale availability alerts were sent. Check the source and retry.');}
   const feed=JSON.parse(await readFile(out,'utf8'));
   if (feed.hubsChecked !== new Set(config.favorites.map(v=>v.hubId)).size) throw new Error('A favorite hub ID was not found in the provider directory; alert history was not changed.');

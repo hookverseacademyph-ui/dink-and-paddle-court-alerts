@@ -1,9 +1,34 @@
 {
   "enabled": true,
+  "daysAhead": 14,
   "favorites": [
+    {
+      "name": "PCKLD.",
+      "hubId": "5812c8bc-dfe5-4e9f-9b7f-59da95a76efb"
+    },
     {
       "name": "The Pickle Prime - Bacoor",
       "hubId": "fbc00051-e9e1-4ecd-a39f-89ac01a30aaa"
+    },
+    {
+      "name": "Garahe Pickleball Court",
+      "hubId": "cb5e7b37-1719-4a18-963e-06c02ff3d448"
+    },
+    {
+      "name": "Assenda",
+      "hubId": "0cde9299-793e-40ce-a1a2-7c1d374d542c"
+    },
+    {
+      "name": "Dink ‘n Smash",
+      "hubId": "af6cb5a6-7262-4502-9f65-b35de3a026f1"
+    },
+    {
+      "name": "The Court BLVD",
+      "hubId": "eec48bf0-423a-4824-bc9a-61fa57d672d6"
+    },
+    {
+      "name": "Courthaus",
+      "hubId": "d5c4c969-3ea4-434a-8d89-3a14e44d03b6"
     }
   ]
 }
