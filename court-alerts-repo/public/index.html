@@ -561,24 +561,32 @@
     function loadCloudFeed() {
       if (cloudRequest) return cloudRequest;
       cloudRequest = (async () => {
-        const results=[];
-        // Two venues at a time keeps upstream traffic modest.
-        for(let i=0;i<CLOUD_VENUES.length;i+=2){
-          const batch=await Promise.all(CLOUD_VENUES.slice(i,i+2).map(async id=>{
-            const response=await fetch('/api/venue?hub='+encodeURIComponent(id),{cache:'no-store'});
-            if(!response.ok)throw new Error('Live provider check unavailable. Please try again shortly.');
-            const data=await response.json();
-            if(data.verificationVersion!==2 || !Array.isArray(data.openings))throw new Error('Unverified feed');
-            return data;
-          }));results.push(...batch);
+        const results=[],failed=[];
+        async function venue(id) {
+          let reason='Network error';
+          for(let attempt=0;attempt<2;attempt++) {
+            try {
+              const response=await fetch('/api/venue?hub='+encodeURIComponent(id),{cache:'no-store',signal:AbortSignal.timeout(60000)});
+              if(!response.ok)throw new Error('HTTP '+response.status);
+              const data=await response.json();
+              if(data.verificationVersion!==2 || !Array.isArray(data.openings))throw new Error('Invalid feed');
+              return data;
+            }catch(error){reason=error.message;if(attempt===0)await new Promise(resolve=>setTimeout(resolve,1500));}
+          }
+          failed.push({id,reason});return null;
         }
-        return {verificationVersion:2,updatedAt:new Date().toISOString(),hubsChecked:results.length,
+        for(let i=0;i<CLOUD_VENUES.length;i+=2){
+          const batch=await Promise.all(CLOUD_VENUES.slice(i,i+2).map(venue));
+          results.push(...batch.filter(Boolean));
+        }
+        if(!results.length)throw new Error('No venue responded: '+(failed[0]?.reason||'connection failed'));
+        return {verificationVersion:2,updatedAt:new Date().toISOString(),hubsChecked:results.length,failedVenues:failed,
           daysAhead:14,openings:results.flatMap(r=>r.openings),verifiedVenues:results.flatMap(r=>r.verifiedVenues||[])};
       })().finally(()=>{cloudRequest=null;});
       return cloudRequest;
     }
     async function loadLiveOpenings(showMessage) {
-      updateLiveBar('wait', 'Loading openings.json...');
+      updateLiveBar('wait', 'Checking venue calendars…');
       try {
         const data = await loadCloudFeed();
         if (data.verificationVersion !== 2 || !Array.isArray(data.openings)) throw new Error('Feed requires a new verified scrape');
@@ -631,11 +639,12 @@
         }
         const priorityCount = liveOpenings.filter(slot => [0, 6].includes(new Date(slot.dateIso + 'T00:00:00Z').getUTCDay()) && isPriorityTime(slot)).length;
         updateLiveBar('live', `360 Sports: ${priorityCount} Sat/Sun 4–10 PM two-hour slots (${liveOpenings.length} total) - scraped ${describeLiveAge(liveUpdatedAt)}`);
+        if(data.failedVenues?.length)updateLiveBar('error', `${liveOpenings.length} verified slots from ${data.hubsChecked}/7 venues · ${data.failedVenues.length} venues could not be checked; retry Check now`);
         if (showMessage) showToast(`Loaded ${liveOpenings.length} live openings from 360 Sports`);
         return true;
       } catch (error) {
         courtSlots = []; liveOpenings = []; clearTimeout(liveExpiryTimer);
-        updateLiveBar('error', 'Live availability unavailable — press Check now; no unverified slots shown');
+        updateLiveBar('error', 'Live check failed: '+error.message+' · No unverified slots shown');
         if (showMessage) showToast('No verified live results. Please use Check now.');
         return false;
       }

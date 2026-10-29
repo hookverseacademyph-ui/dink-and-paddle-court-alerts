@@ -16,7 +16,8 @@ export async function handle(request, env, ctx, scrape = scrapeVenue, cache = gl
   cacheUrl.searchParams.set('hub', id);
   const cacheKey = new Request(cacheUrl.href);
   try {
-    const cached = await cache?.match(cacheKey);
+    let cached;
+    try { cached = await cache?.match(cacheKey); } catch { /* Cache failure must not block a live provider check. */ }
     if (cached) return json(await cached.json());
     const feed = await scrape(id);
     if (feed.verificationVersion !== 2 || !Array.isArray(feed.openings)) throw new Error('Unverified feed');
