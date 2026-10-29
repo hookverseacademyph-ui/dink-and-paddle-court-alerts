@@ -54,7 +54,7 @@ export function alertBatches(changed) {
 }
 async function save(state) {
   await mkdir(path.dirname(STATE),{recursive:true});
-  await writeFile(STATE+'.tmp',JSON.stringify({version:1,slots:state},null,2)+'\n');await rename(STATE+'.tmp',STATE);
+  await writeFile(STATE+'.tmp',JSON.stringify({version:2,chats:state},null,2)+'\n');await rename(STATE+'.tmp',STATE);
 }
 async function telegram(method,body) {
   const token=process.env.TELEGRAM_BOT_TOKEN;
@@ -63,18 +63,42 @@ async function telegram(method,body) {
     response=await fetch(`https://api.telegram.org/bot${token}/${method}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(30000)});
     data=await response.json();
   }catch{throw new Error('Telegram connection failed; check credentials and network. No token is logged.');}
-  if(!response.ok||!data.ok)throw new Error(`Telegram request failed (${data.error_code || response.status}). Confirm the bot token, personal chat ID and that you pressed Start.`);
+  if(!response.ok||!data.ok)throw new Error(`Telegram request failed (${data.error_code || response.status}). Confirm the bot token and chat ID; press Start in a personal chat or add the bot to the group with permission to send messages.`);
   return data.result;
+}
+export function validateDestination(chatId, chat) {
+  if (!/^-?[1-9]\d*$/.test(String(chatId || ''))) throw new Error('Set a valid numeric TELEGRAM_CHAT_ID in GitHub Actions secrets.');
+  if (!chat || !['private', 'group', 'supergroup'].includes(chat.type) || String(chat.id) !== String(chatId)) throw new Error('Destination must be the configured personal chat or Telegram group.');
+  if ((chat.type === 'private') !== (Number(chatId) > 0)) throw new Error('Telegram chat ID does not match the destination type.');
+}
+export function destinationIds(value) {
+  const ids=String(value||'').split(',').map(id=>id.trim());
+  if(ids.some(id=>! /^-?[1-9]\d*$/.test(id))) throw new Error('TELEGRAM_CHAT_ID must contain numeric chat IDs separated by commas.');
+  return [...new Set(ids)];
+}
+export function destinationHistory(saved, ids) {
+  const validSlots=value=>value && typeof value==='object' && !Array.isArray(value) && Object.values(value).every(courts=>Array.isArray(courts) && courts.every(c=>typeof c==='string'));
+  if(saved.version===2 && saved.chats && typeof saved.chats==='object' && !Array.isArray(saved.chats) && Object.values(saved.chats).every(validSlots)) return saved.chats;
+  if(saved.version===1 && validSlots(saved.slots)) {
+    // Legacy state did not identify its recipient. Start each destination with its own history.
+    return {};
+  }
+  throw new Error('Saved alert state is invalid; refusing to resend all alerts.');
 }
 async function main() {
   const config=JSON.parse(await readFile(path.join(HERE,'watchlist.json'),'utf8'));
   const test=process.argv.includes('--test');
   if(!test && config.enabled!==true){console.log('Alerts disabled. Configure secrets/watchlist, then set enabled to true.');return;}
-  if(!process.env.TELEGRAM_BOT_TOKEN || !/^\d+$/.test(process.env.TELEGRAM_CHAT_ID||'')) throw new Error('Set TELEGRAM_BOT_TOKEN and positive personal TELEGRAM_CHAT_ID in GitHub Actions secrets.');
-  // Read-only verification prevents accidentally sending to a group instead of the requested personal chat.
-  const chat=await telegram('getChat',{chat_id:process.env.TELEGRAM_CHAT_ID});
-  if(chat.type!=='private')throw new Error('Alerts are configured for a personal Telegram chat only.');
-  if(test){await telegram('sendMessage',{chat_id:process.env.TELEGRAM_CHAT_ID,text:'✅ Dink and Paddle Telegram connection works. This is a setup test, not a court-availability alert.',disable_notification:false});console.log('Test message sent to your personal chat.');return;}
+  if(!process.env.TELEGRAM_BOT_TOKEN) throw new Error('Set TELEGRAM_BOT_TOKEN in GitHub Actions secrets.');
+  const chatIds=destinationIds(process.env.TELEGRAM_CHAT_ID);
+  for(const chatId of chatIds) validateDestination(chatId, await telegram('getChat',{chat_id:chatId}));
+  if(test){
+    for(const chatId of chatIds){
+      await telegram('sendMessage',{chat_id:chatId,text:'✅ Dink and Paddle Telegram connection works. This is a setup test, not a court-availability alert.',disable_notification:false});
+      await new Promise(resolve=>setTimeout(resolve,1100));
+    }
+    console.log(`Test message sent to ${chatIds.length} configured Telegram destinations.`);return;
+  }
   if(!Array.isArray(config.favorites)||!config.favorites.length || config.favorites.some(v=>!/^[a-f0-9-]{36}$/.test(v.hubId||'')))throw new Error('Add valid favorite venue hub IDs in watchlist.json.');
   const out=path.join(HERE,'openings.json');
   const daysAhead = config.daysAhead ?? 14;
@@ -84,16 +108,25 @@ async function main() {
   const feed=JSON.parse(await readFile(out,'utf8'));
   if (feed.hubsChecked !== new Set(config.favorites.map(v=>v.hubId)).size) throw new Error('A favorite hub ID was not found in the provider directory; alert history was not changed.');
   const slots=selectOpenings(feed,config.favorites);
-  let previous={};try{const state=JSON.parse(await readFile(STATE,'utf8'));if(state.version!==1 || typeof state.slots!=='object' || !state.slots)throw Error();previous=state.slots;}catch(e){if(e.code!=='ENOENT')throw new Error('Saved alert state is invalid; refusing to resend all alerts.');}
-  const plan=alertPlan(slots,previous),state=plan.baseline;
-  await save(state);
-  let sent=0;
-  for(const batch of alertBatches(plan.changed)){
-    await telegram('sendMessage',{chat_id:process.env.TELEGRAM_CHAT_ID,text:notification(batch),disable_notification:false,link_preview_options:{is_disabled:true}});
-    for(const entry of batch)state[entry.key]=plan.current[entry.key];
-    await save(state);sent++;
-    await new Promise(resolve=>setTimeout(resolve,1100));
+  let histories={};
+  try{histories=destinationHistory(JSON.parse(await readFile(STATE,'utf8')),chatIds);}catch(e){if(e.code!=='ENOENT')throw new Error('Saved alert state is invalid; refusing to resend all alerts.');}
+  let sent=0,failures=0;
+  for(const chatId of chatIds){
+    const plan=alertPlan(slots,histories[chatId]||{});
+    histories[chatId]=plan.baseline;
+    await save(histories);
+    for(const batch of alertBatches(plan.changed)){
+      try{
+        await telegram('sendMessage',{chat_id:chatId,text:notification(batch),disable_notification:false,link_preview_options:{is_disabled:true}});
+      }catch{
+        failures++;console.error('A Telegram destination could not receive alerts; unsent availability will be retried.');break;
+      }
+      for(const entry of batch)histories[chatId][entry.key]=plan.current[entry.key];
+      await save(histories);sent++;
+      await new Promise(resolve=>setTimeout(resolve,1100));
+    }
   }
-  console.log(`${slots.length} qualifying sessions checked; ${sent} new-availability alerts sent.`);
+  console.log(`${slots.length} qualifying sessions checked; ${sent} new-availability messages sent across ${chatIds.length} destinations.`);
+  if(failures)throw new Error('Some Telegram destinations failed. Check group membership and send-message permissions.');
 }
 if(process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(e=>{console.error(e.message);process.exitCode=1;});
