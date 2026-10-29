@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dink and Paddle Pickleball Club – Cavite | Court Availability Tracker</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            athletic: {
+              void: '#06090E',
+              carbon: '#090D14',
+              charcoal: '#0F1624',
+              elevated: '#151E30',
+              border: 'rgba(255, 255, 255, 0.08)',
+              borderFocus: 'rgba(204, 255, 0, 0.4)',
+              volt: '#CCFF00',
+              voltHover: '#B8E600',
+              voltMuted: 'rgba(204, 255, 0, 0.12)',
+              chalk: '#F8FAFC',
+              muted: '#B4BFD0',
+              dim: '#8793A8',
+              sky: '#38BDF8',
+              orange: '#FB923C'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #090D14; }
+    ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #CCFF00; }
+
+    /* Crisp dark-mode native calendar picker styling */
+    input[type="date"] {
+      color-scheme: dark;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.9;
+      filter: invert(0.9) sepia(100%) saturate(300%) hue-rotate(35deg);
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator:hover {
+      opacity: 1;
+      filter: invert(1);
+    }
+
+    * { box-sizing: border-box; }
+    body { overflow-wrap: break-word; }
+    button, summary, input, select { touch-action: manipulation; }
+    button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #ccff00; outline-offset: 3px; }
+    .app-header { background:#090d14; border-bottom:1px solid rgba(255,255,255,.08); position:sticky; top:0; z-index:40; }
+    .header-inner { max-width:1280px; margin:auto; padding:16px 32px; display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
+    .brand { display:flex; gap:10px; align-items:center; white-space:nowrap; font-size:17px; font-weight:800; }
+    .brand-icon { display:grid; place-items:center; width:32px; height:32px; border-radius:9px; color:#06090e; background:#ccff00; flex-shrink:0; }
+    .main-nav { display:flex; gap:6px; margin-left:auto; order:1; }
+    .main-nav button { min-height:42px; padding:10px 14px; border-radius:9px; color:#b4bfd0; font-size:13px; font-weight:600; white-space:nowrap; background:transparent; border:0; box-shadow:none; justify-content:center; }
+    .main-nav button[aria-current=page] { background:#ccff00; color:#06090e; }
+    .main-nav #nav-telegram:not([aria-current]) { color:#7dd3fc; }
+    .secondary-menu { position:relative; order:2; }
+    summary { cursor:pointer; list-style:none; } summary::-webkit-details-marker { display:none; }
+    .secondary-menu summary { display:flex; align-items:center; gap:8px; min-height:44px; font-size:12px; color:#b4bfd0; padding:8px; }
+    .menu-panel { position:absolute; right:0; top:48px; min-width:180px; padding:6px; background:#151e30; border:1px solid #293245; border-radius:12px; box-shadow:0 12px 30px #0008; }
+    .menu-panel button { display:block; text-align:left; width:100%; padding:12px; font-size:13px; border-radius:7px; } .menu-panel button:hover { background:#ffffff0d; }
+    .feed-intro { display:flex; justify-content:space-between; gap:16px; align-items:center; } .feed-intro h1, .settings-panel h1 { font-size:26px; font-weight:750; letter-spacing:-.7px; } .feed-intro p { font-size:13px; color:#b4bfd0; margin-top:6px; } .area-note { color:#8793a8; font-size:12px; }
+    .feed-status { display:flex; gap:16px; align-items:center; padding:16px; border:1px solid #ffffff14; border-radius:12px; background:#090d14; }
+    .status-copy { min-width:0; flex:1; } .status-heading { display:flex; align-items:center; gap:8px; font-size:12px; line-height:1.6; } #live-dot { flex-shrink:0; } #scrape-status { color:#8793a8; font-size:11px; margin-top:4px; }
+    #check-now-btn { display:flex; align-items:center; justify-content:center; gap:8px; flex-shrink:0; min-height:44px; border:1px solid #ffffff25; border-radius:9px; padding:10px 14px; font-size:12px; font-weight:650; } #check-now-btn:disabled { opacity:.5; }
+    .filter-panel { border:1px solid #ffffff14; background:#0f1624; padding:20px; border-radius:14px; } .basic-filters { display:grid; grid-template-columns:1fr 1fr; gap:20px; } .basic-filters > div, .advanced-grid > div { min-width:0; }
+    .filter-panel input, .filter-panel select { min-height:44px; } .filter-panel input[type=checkbox] { min-height:0; accent-color:#ccff00; }
+    .advanced-filters { margin-top:16px; border-top:1px solid #ffffff14; padding-top:12px; } .advanced-filters > summary { display:flex; justify-content:space-between; align-items:center; min-height:36px; color:#b4bfd0; font-size:12px; } .advanced-content { margin-top:16px; } .advanced-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; } .filter-options { display:flex; flex-wrap:wrap; gap:16px; align-items:center; margin:18px 0; font-size:12px; color:#b4bfd0; } .filter-options label { display:flex; align-items:center; gap:8px; min-height:32px; } .filter-options button { margin-left:auto; }
+    .advanced-content .flex.items-center.gap-1 { flex-wrap:wrap; }
+    .court-card { padding:20px; gap:20px; } .court-title { display:flex; gap:12px; align-items:flex-start; justify-content:space-between; } .court-title h3 { font-size:16px; font-weight:700; line-height:1.5; } .court-title p { color:#8793a8; font-size:12px; margin-top:3px; } .favorite-button { color:#8793a8; min-width:32px; min-height:32px; } .is-favorite { color:#ccff00; }
+    .court-session { display:flex; flex-direction:column; gap:5px; } .court-session span { font-size:12px; color:#b4bfd0; } .court-session strong { font-size:17px; font-weight:650; } .court-meta { display:flex; gap:12px; justify-content:space-between; flex-wrap:wrap; color:#b4bfd0; font-size:11px; }
+    .court-actions { display:flex; gap:8px; align-items:center; padding-top:16px; border-top:1px solid #ffffff12; } .book-button { flex:1; background:#ccff00; color:#06090e; font-size:12px; font-weight:750; border-radius:8px; min-height:44px; } .book-button i { margin-left:6px; font-size:10px; } .telegram-button { color:#7dd3fc; font-size:12px; min-height:44px; padding:0 10px; } .card-more { position:relative; } .card-more summary { display:grid; place-items:center; width:34px; min-height:44px; color:#8793a8; } .card-more > div { position:absolute; bottom:48px; right:0; background:#151e30; padding:12px; border:1px solid #293245; border-radius:8px; white-space:nowrap; font-size:12px; }
+    .settings-panel { max-width:680px; } .settings-panel > div { margin:24px 0; padding:20px; border:1px solid #ffffff14; border-radius:12px; background:#0f1624; } .settings-panel h2 { font-weight:650; font-size:15px; } .settings-panel p { color:#b4bfd0; font-size:13px; line-height:1.8; margin-top:8px; } .plain-button { min-height:44px; font-size:13px; color:#ccff00; }
+    .venue-quick-links { display:flex; flex-direction:column; flex-shrink:0; align-items:stretch; }
+    .venue-quick-links .telegram-button, .google-maps-link { display:flex; align-items:center; justify-content:flex-start; gap:4px; min-height:44px; padding:0 10px; font-size:12px; }
+    .google-maps-link { color:#a3b8cd; text-decoration:none; }
+    .google-maps-link:hover { color:#fff; }
+    .google-maps-link:focus-visible { outline:2px solid #ccff00; outline-offset:2px; border-radius:6px; }
+    #toast-container { width:calc(100% - 32px); right:16px; bottom:16px; } main, section { min-width:0; } #tab-explorer, #tab-comparison, #tab-telegram, #tab-logger { overflow-wrap:anywhere; } footer { font-size:11px; }
+    @media(max-width:900px) { .header-inner { gap:10px; padding:12px 20px; } .brand { font-size:16px; } .secondary-menu { margin-left:auto; order:0; } .main-nav { width:100%; margin-left:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; } .main-nav button { padding:10px 4px; font-size:12px; } }
+    @media(max-width:540px) { .header-inner { padding:10px 16px; } .feed-intro { display:block; } .feed-intro h1 { font-size:24px; } .area-note { display:none; } .feed-intro p { font-size:12px; } .feed-status { align-items:stretch; flex-direction:column; gap:12px; } #check-now-btn { align-self:flex-start; } .filter-panel { padding:16px; } .basic-filters,.advanced-grid { grid-template-columns:1fr; gap:18px; } .filter-options { flex-direction:column; align-items:flex-start; gap:6px; } .filter-options button { margin-left:0; min-height:44px; } .court-card { padding:18px; } .court-session strong { font-size:16px; } #tab-dashboard > .space-y-4 > .flex { flex-wrap:wrap; gap:8px; } .settings-panel h1 { font-size:24px; } }
+    .venue-facebook-link { color:#b4bfd0; text-decoration:underline; text-underline-offset:3px; display:inline-flex; align-items:center; gap:6px; min-height:32px; }
+    .venue-facebook-link:hover { color:#ccff00; } .venue-facebook-link:focus-visible { outline:2px solid #ccff00; outline-offset:3px; border-radius:3px; }
+    .venue-facebook-link i { font-size:9px; } .venue-price { display:flex; flex-direction:column; align-items:flex-end; gap:3px; }
+    .card-more > div button { display:block; min-height:36px; width:100%; text-align:left; }
+    .venue-options { min-width:0; } .slot-count { color:#b4bfd0; font-size:11px; display:block; margin-bottom:8px; }
+    .venue-time-select { width:100%; min-width:0; min-height:46px; background:#090d14; color:#f8fafc; border:1px solid #ffffff25; border-radius:8px; padding:10px 8px; font-size:12px; font-weight:600; color-scheme:dark; }
+    .time-option-note { color:#8793a8; font-size:10px; margin-top:7px; line-height:1.5; }
+    .booking-portal { color:#8793a8; font-size:11px; margin-top:-10px; }
+    .brand { min-width:0; max-width:calc(100% - 78px); white-space:normal; text-align:left; }
+    .brand-copy { display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .brand-name { line-height:1.35; }
+    .brand-subtitle { font-size:11px; font-weight:500; color:#8793a8; line-height:1.5; }
+    @media(max-width:540px) { .brand-name { font-size:14px; } .brand-subtitle { font-size:10px; } }
+  </style>
+</head>
+<body class="bg-athletic-void text-athletic-chalk font-sans min-h-screen flex flex-col selection:bg-athletic-volt selection:text-black antialiased ">
+
+  <header class="app-header">
+    <div class="header-inner">
+      <button class="brand" onclick="switchTab('dashboard')" aria-label="Dink and Paddle Pickleball Club – Cavite home"><span class="brand-icon"><i class="fa-solid fa-table-tennis-paddle-ball"></i></span><span class="brand-copy"><span class="brand-name">Dink and Paddle Pickleball Club – Cavite</span><span class="brand-subtitle">Court Availability Tracker</span></span></button>
+      <details class="secondary-menu" id="secondary-menu"><summary aria-label="More options"><i class="fa-solid fa-ellipsis"></i><span>More</span></summary><div class="menu-panel">
+        <button onclick="switchTab('comparison')">Compare prices</button><button onclick="switchTab('logger')">Add slot</button><button onclick="downloadOpeningsJson()">Download list</button><button onclick="openInviteModal(); document.getElementById('secondary-menu').open=false">Invite</button>
+      </div></details>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button id="nav-dashboard" onclick="switchTab('dashboard')" aria-current="page">Courts</button>
+        <button id="nav-explorer" onclick="switchTab('explorer')">Venues</button>
+        <button id="nav-telegram" onclick="switchTab('telegram')"><i class="fa-brands fa-telegram"></i> Telegram</button>
+        <button id="nav-settings" onclick="switchTab('settings')">Settings</button>
+      </nav>
+    </div>
+  </header>
+  <!-- Toast Notification Stack -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- MAIN WRAPPER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ========================================== -->
+    <!-- TAB 1: RADAR / COURTS FEED                 -->
+    <!-- ========================================== -->
+    <section id="tab-dashboard" class="space-y-6">
+
+      <div class="feed-intro"><div><h1>Available courts</h1><p>Sat–Sun · 4–10 PM · Minimum 2 hours</p></div><span class="area-note">Bacoor · Imus · Kawit</span></div>
+      <div id="live-bar" class="feed-status"><div class="status-copy"><div class="status-heading"><span id="live-dot" class="w-2 h-2 rounded-full bg-athletic-dim"></span><span id="live-text">Loading availability…</span></div><p id="scrape-status">Auto-check every 30 minutes</p></div><button id="check-now-btn" onclick="triggerManualCheck()"><i id="refresh-icon" class="fa-solid fa-rotate"></i> Check now</button></div>
+      <div hidden aria-hidden="true"><span id="stat-zone-text"></span><span id="stat-budget-text"></span><span id="stat-schedule-text"></span><span id="stat-date-subtext"></span><span id="stat-matches-count"></span></div>
+      <div class="filter-panel"><div class="basic-filters">          <!-- 2. Date Selection (With Tactile Quick Pills & Native Picker) -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="text-[10px] font-bold uppercase tracking-widest text-athletic-dim flex items-center gap-1">
+                <i class="fa-regular fa-calendar-days text-athletic-volt"></i>
+                <span>Date</span>
+              </label>
+              <!-- Tactile Quick Pill Selectors -->
+              <div class="flex items-center gap-1">
+                <button type="button" id="btn-quick-sat" onclick="setQuickDate('sat')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-slate-300 transition cursor-pointer">This Sat</button>
+                <button type="button" id="btn-quick-sun" onclick="setQuickDate('sun')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-slate-300 transition cursor-pointer">This Sun</button>
+                <button type="button" id="btn-quick-all" onclick="clearDateFilter()" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-athletic-volt text-black transition cursor-pointer">All</button>
+              </div>
+            </div>
+            <div class="relative">
+              <input type="date" aria-label="Booking date" id="filter-date" onchange="applyFilters()" onclick="try{this.showPicker()}catch(e){}" class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt transition cursor-pointer [color-scheme:dark]" style="color-scheme: dark;">
+            </div>
+          </div>
+
+          <!-- 3. Cavite Circuit Location -->
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1.5">City</label>
+            <select aria-label="City" id="filter-location" onchange="applyFilters()" class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt transition">
+              <option value="ALL" selected>All cities</option>
+              <option value="Bacoor City">📍 Bacoor City, Cavite</option>
+              <option value="Imus City">📍 Imus City, Cavite</option>
+              <option value="Kawit">📍 Kawit, Cavite</option>
+            </select>
+          </div>
+
+</div>
+      <details class="advanced-filters"><summary>More filters <i class="fa-solid fa-sliders"></i></summary><div class="advanced-content"><div class="advanced-grid">          <!-- 1. Platform Selector -->
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1.5">Booking Platform</label>
+            <select aria-label="Booking platform" id="filter-platform" onchange="applyFilters()" class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt transition"><option value="360 Sports" selected>360 Sports</option></select>
+          </div>
+
+          <!-- 4. Price Bracket -->
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-athletic-dim">Target Bracket (₱/hr)</span>
+              <span id="budget-range-label" class="text-xs font-mono font-bold text-athletic-volt">₱300 – ₱600</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="relative">
+                <span class="absolute left-2.5 top-2 text-[10px] text-athletic-dim font-mono">₱</span>
+                <input type="number" aria-label="Minimum hourly price" id="filter-min-price" min="100" max="1000" step="50" value="300" oninput="applyFilters()" class="w-full bg-athletic-void border border-athletic-border rounded-xl pl-6 pr-2 py-1.5 text-xs text-white font-mono font-bold focus:outline-none focus:border-athletic-volt">
+              </div>
+              <div class="relative">
+                <span class="absolute left-2.5 top-2 text-[10px] text-athletic-dim font-mono">₱</span>
+                <input type="number" aria-label="Maximum hourly price" id="filter-max-price" min="100" max="1500" step="50" value="600" oninput="applyFilters()" class="w-full bg-athletic-void border border-athletic-border rounded-xl pl-6 pr-2 py-1.5 text-xs text-white font-mono font-bold focus:outline-none focus:border-athletic-volt">
+              </div>
+            </div>
+          </div>
+</div>
+      <div class="filter-options"><label><input type="checkbox" id="filter-favorites-only" onchange="applyFilters()"> Favorites only</label><label><input type="checkbox" id="show-all-days" onchange="applyFilters()"> All downloaded dates / hours</label><button onclick="resetFilters()">Reset filters</button></div>        <!-- NEW: Environment & Amenity Filter Pills Strip -->
+        <div class="pt-3 border-t border-athletic-border flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[10px] uppercase font-bold tracking-widest text-athletic-dim flex items-center gap-1">
+              <i class="fa-solid fa-building-circle-check text-athletic-volt"></i>
+              <span>Setting:</span>
+            </span>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="setEnvironmentFilter('ALL')" id="env-pill-ALL" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-athletic-volt text-black transition cursor-pointer">All Venues</button>
+              <button type="button" onclick="setEnvironmentFilter('Indoor AC')" id="env-pill-Indoor AC" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-snowflake text-sky-400 text-[10px]"></i>
+                <span>Indoor (AC)</span>
+              </button>
+              <button type="button" onclick="setEnvironmentFilter('Covered')" id="env-pill-Covered" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-emerald-400 text-[10px]"></i>
+                <span>Covered Arena</span>
+              </button>
+              <button type="button" onclick="setEnvironmentFilter('Outdoor')" id="env-pill-Outdoor" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-sun text-amber-400 text-[10px]"></i>
+                <span>Outdoor</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <label class="flex items-center gap-2 cursor-pointer select-none text-slate-300">
+              <input type="checkbox" id="toggle-show-overbudget" onchange="applyFilters()" checked class="rounded bg-athletic-void border-athletic-border text-athletic-volt">
+              <span class="text-xs">Show slots outside price range</span>
+            </label>
+          </div>
+        </div>
+</div></details></div>
+      <!-- Active Slots Feed -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-athletic-volt"></span>
+            <h3 class="font-display font-bold uppercase text-sm tracking-wide text-white">Venues with openings</h3>
+            <span id="results-count-badge" class="bg-athletic-charcoal border border-athletic-border text-athletic-volt text-[11px] px-2 py-0.5 rounded-full font-mono font-bold">0</span>
+          </div>
+          <span class="text-[11px] text-athletic-dim uppercase tracking-wider font-semibold">
+            <i class="fa-solid fa-arrow-down-wide-short text-athletic-volt mr-1"></i> Date & time
+          </span>
+        </div>
+
+        <div id="slots-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+        <div id="overbudget-section" class="mt-10 pt-6 border-t border-athletic-border">
+          <div class="flex items-center gap-2 mb-3">
+            <i class="fa-solid fa-circle-exclamation text-athletic-orange text-xs"></i>
+            <h4 class="text-xs uppercase font-bold tracking-widest text-athletic-muted">Outside price range</h4>
+          </div>
+          <div id="overbudget-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <section id="tab-settings" class="hidden settings-panel"><h1>Settings</h1><div><h2>Availability checks</h2><p>Automatic checks run every 30 minutes while your PC is awake and online. Use Check now on the Courts tab for an extra check.</p></div><div><h2>Your preferred session</h2><p>Saturday and Sunday, 4 PM–10 PM. Every result has at least two continuous hours on the same court.</p></div><div><h2>Live source</h2><p>360 Sports public availability. Confirm availability and pricing with the venue before booking.</p></div><button onclick="switchTab('dashboard')" class="plain-button">Back to courts</button></section>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: TELEGRAM ALERTS HUB                 -->
+    <!-- ========================================== -->
+    <section id="tab-telegram" class="space-y-6 hidden"><div class="bg-athletic-charcoal border border-athletic-border p-5 rounded-xl"><h2 class="text-lg font-bold">Telegram alerts</h2><p class="text-slate-300 mt-3">Automatic alerts are sent to the configured Telegram groups when new verified availability is found.</p><p class="text-slate-300 mt-3">Saturday and Sunday · 4–10 PM · 2 continuous hours · 14 days ahead.</p><p class="text-slate-300 mt-3">Use Telegram on a venue card to share the selected session with a chat of your choice.</p></div></section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: VENUE DIRECTORY                     -->
+    <!-- ========================================== -->
+    <section id="tab-explorer" class="space-y-6 hidden">
+      <div class="bg-athletic-charcoal border border-athletic-border p-6 rounded-2xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-athletic-border">
+          <div>
+            <h2 class="font-display font-bold text-lg uppercase tracking-tight text-white flex items-center gap-2">
+              <i class="fa-solid fa-location-crosshairs text-athletic-volt"></i>
+              <span>Cavite Pickleball Circuit</span>
+            </h2>
+            <p class="text-xs text-athletic-dim mt-0.5">Verified 360 Sports venues in Bacoor, Imus, and Kawit</p>
+          </div>
+          <button onclick="switchTab('logger')" class="bg-athletic-volt hover:bg-athletic-voltHover text-slate-950 font-bold px-4 py-2 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer">
+            + Log New Court
+          </button>
+        </div>
+
+        <p class="mt-4 text-xs text-athletic-dim">Verified 360 Sports venues with active Pickleball courts. A directory listing does not mean a time slot is available; check the Courts tab for live openings.</p>
+
+        <div class="mt-6 overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-athletic-void text-athletic-dim uppercase text-[10px] tracking-widest border-b border-athletic-border">
+              <tr><th class="p-3">Venue</th><th class="p-3">City</th><th class="p-3">Platform</th><th class="p-3">Pickleball courts</th><th class="p-3 text-right">Portal</th></tr>
+            </thead>
+            <tbody id="venues-directory-body" class="divide-y divide-athletic-border"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: PRICE MATRIX                        -->
+    <!-- ========================================== -->
+    <section id="tab-comparison" class="space-y-6 hidden">
+      <div class="bg-athletic-charcoal border border-athletic-border p-6 rounded-2xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-athletic-border">
+          <div>
+            <h2 class="font-display font-bold text-lg uppercase tracking-tight text-white flex items-center gap-2">
+              <i class="fa-solid fa-chart-simple text-athletic-volt"></i>
+              <span>Price Benchmark Matrix</span>
+            </h2>
+            <p class="text-xs text-athletic-dim mt-0.5">Normalized hourly court rates in Philippine Pesos (₱)</p>
+          </div>
+          <div class="bg-athletic-void px-3 py-1.5 rounded-lg border border-athletic-border text-xs text-athletic-dim font-mono">
+            Target: <span class="text-athletic-volt font-bold">₱300 – ₱600 / hr</span>
+          </div>
+        </div>
+
+        <div class="mt-4 overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-athletic-void text-athletic-dim uppercase text-[10px] tracking-widest border-b border-athletic-border">
+              <tr>
+                <th class="p-3">Rank & Venue</th>
+                <th class="p-3">Location</th>
+                <th class="p-3">Platform</th>
+                <th class="p-3">Advertised Rate</th>
+                <th class="p-3">Hourly Normalization</th>
+                <th class="p-3">Setting</th>
+                <th class="p-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="comparison-table-body" class="divide-y divide-athletic-border"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: LOG MANUAL SLOT                     -->
+    <!-- ========================================== -->
+    <section id="tab-logger" class="space-y-6 hidden">
+      <div class="max-w-2xl mx-auto bg-athletic-charcoal border border-athletic-border p-6 sm:p-8 rounded-2xl shadow-2xl">
+        <div class="flex items-center gap-3 pb-5 border-b border-athletic-border">
+          <div class="w-10 h-10 rounded-xl bg-athletic-volt/10 text-athletic-volt flex items-center justify-center text-lg">
+            <i class="fa-solid fa-plus"></i>
+          </div>
+          <div>
+            <h2 class="font-display font-bold text-base uppercase tracking-tight text-white">Log Discovered Slot</h2>
+            <p class="text-xs text-athletic-dim">Discovered an open court on Pikort, CourtMatch, or Reclub? Share it with the group.</p>
+          </div>
+        </div>
+
+        <form id="slot-logger-form" onsubmit="handleManualSlotSubmit(event)" class="mt-6 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Venue Name *</label>
+              <input type="text" id="log-venue" required placeholder="Venue name" class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Municipality *</label>
+              <select id="log-location" required class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+                <option value="Bacoor City">Bacoor City, Cavite</option>
+                <option value="Imus City">Imus City, Cavite</option>
+                <option value="Kawit">Kawit, Cavite</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Setting / Environment *</label>
+              <select id="log-env" required class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+                <option value="Indoor AC">❄️ Indoor (Air-conditioned)</option>
+                <option value="Covered" selected>🛡️ Covered Arena</option>
+                <option value="Outdoor">☀️ Outdoor Floodlit</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Court Surface *</label>
+              <select id="log-surface" required class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+                <option value="Taraflex Cushion">Taraflex Cushion</option>
+                <option value="Cushioned Wood">Cushioned Wood</option>
+                <option value="Pro Acrylic" selected>Pro Acrylic Hardcourt</option>
+                <option value="Plexipave">Plexipave All-Weather</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Key Amenities</label>
+              <input type="text" id="log-amenities" placeholder="e.g. Free Parking, Showers" class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Platform *</label>
+              <select id="log-platform" required class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+                <option value="Pikort">Pikort (pikort.ph)</option>
+                <option value="CourtMatch PH">CourtMatch PH</option>
+                <option value="360 Sports">360 Sports</option>
+                <option value="Reclub">Reclub</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Day *</label>
+              <select id="log-day" required class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+                <option value="Saturday">Upcoming Saturday</option>
+                <option value="Sunday">Upcoming Sunday</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Time Slot *</label>
+              <input type="text" id="log-time" required placeholder="5:00 PM - 7:00 PM" class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Hourly Rate (₱) *</label>
+              <input type="number" id="log-price" required placeholder="450" class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt font-mono">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Capacity</label>
+              <input type="number" id="log-capacity" value="6" class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Status</label>
+              <select id="log-status" class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+                <option value="Available">Available (Confirmed)</option>
+                <option value="Possible opening">Possible opening</option>
+                <option value="Unverified">Unverified</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-athletic-dim mb-1">Direct Platform Link</label>
+            <input type="url" id="log-url" placeholder="https://pikort.ph or https://courtmatchph.com" class="w-full bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-athletic-volt">
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="w-full bg-athletic-volt hover:bg-athletic-voltHover text-slate-950 font-extrabold py-3 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer">
+              Post to Group Circuit
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modals -->
+  <div id="booking-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-athletic-charcoal border border-athletic-border w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-athletic-border">
+        <span class="text-xs font-bold uppercase tracking-widest text-athletic-volt">Platform Direct Dispatch</span>
+        <button onclick="closeModal('booking-modal')" class="text-athletic-dim hover:text-white cursor-pointer">&times;</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <p class="text-athletic-muted">Opening platform booking portal for:</p>
+        <div class="bg-athletic-void p-3.5 rounded-xl border border-athletic-border space-y-1">
+          <div class="font-bold text-sm text-white" id="modal-venue-name">Venue</div>
+          <div class="text-athletic-dim" id="modal-slot-time">Schedule</div>
+          <div class="text-athletic-volt font-bold font-mono" id="modal-slot-price">Rate</div>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="closeModal('booking-modal')" class="px-4 py-2 rounded-xl bg-athletic-void text-athletic-muted text-xs font-semibold hover:text-white cursor-pointer">Cancel</button>
+        <a id="modal-direct-link" href="#" target="_blank" onclick="closeModal('booking-modal')" class="px-4 py-2 rounded-xl bg-athletic-volt text-slate-950 text-xs font-bold transition flex items-center gap-2 cursor-pointer">
+          <span>Continue to Portal</span>
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="invite-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="bg-athletic-charcoal border border-athletic-border w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-athletic-border">
+        <span class="text-xs font-bold uppercase tracking-widest text-athletic-volt">Invite Player</span>
+        <button onclick="closeModal('invite-modal')" class="text-athletic-dim hover:text-white cursor-pointer">&times;</button>
+      </div>
+      <div class="space-y-3 text-xs">
+        <p class="text-athletic-muted">Share the court tracker with your pickleball group:</p>
+        <div class="flex items-center gap-2">
+          <input type="text" id="invite-link-input" readonly value="" class="flex-1 bg-athletic-void border border-athletic-border rounded-xl px-3 py-2 text-xs text-slate-300 font-mono">
+          <button onclick="copyInviteLink()" class="bg-athletic-volt text-slate-950 font-bold px-3 py-2 rounded-xl text-xs cursor-pointer">Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-athletic-carbon border-t border-athletic-border mt-auto py-6">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-athletic-dim space-y-1">
+      <div class="font-medium text-slate-400">Dink and Paddle Pickleball Club – Cavite • Court Availability Tracker</div>
+      <div class="text-[11px] text-athletic-dim font-mono">Live source: 360 Sports</div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT APPLICATION CORE -->
+  <script>
+    let verifiedVenues = [];
+    function directoryFromLiveData(data, slots) {
+      const source = Array.isArray(data.verifiedVenues) ? data.verifiedVenues : slots.map(slot => ({
+        id: slot.bookingUrl, name: slot.venueName, municipality: slot.municipality,
+        address: slot.address, bookingUrl: slot.bookingUrl, courtsTotal: slot.courtsTotal,
+        platform: slot.platform, directoryVerified: slot.availabilityVerified
+      }));
+      const unique = new Map();
+      source.forEach(venue => {
+        let url;
+        try { url = new URL(venue.bookingUrl); } catch { return; }
+        if (venue.directoryVerified !== true || venue.platform !== '360 Sports' ||
+            url.protocol !== 'https:' || url.hostname !== 'app.sports360.ph' ||
+            !url.pathname.startsWith('/sportshub/') || !venue.name ||
+            !['bacoor','imus','kawit'].includes(cityKey(venue.municipality))) return;
+        unique.set(url.href, { ...venue, bookingUrl: url.href });
+      });
+      return [...unique.values()].sort((a,b) => a.name.localeCompare(b.name));
+    }
+
+    const SLOTS_STORAGE_KEY = 'tsc_court_slots_v1';
+
+    function saveSlots() {
+      try {
+        localStorage.setItem(SLOTS_STORAGE_KEY, JSON.stringify(courtSlots));
+      } catch (error) {
+        console.warn('Slots could not be saved in this browser.', error);
+      }
+    }
+
+    let courtSlots = [];
+    let liveExpiryTimer = null;
+
+    /* Live openings written by scrape-sports360.mjs. Kept separate from the
+       sample list so a missing file never breaks the page. */
+    let liveOpenings = [];
+    let liveUpdatedAt = null;
+
+    function updateLiveBar(state, message) {
+      const dot = document.getElementById('live-dot');
+      const text = document.getElementById('live-text');
+      if (!dot || !text) return;
+      dot.className = 'w-2 h-2 rounded-full ' + (
+        state === 'live' ? 'bg-athletic-volt' :
+        state === 'error' ? 'bg-athletic-orange' : 'bg-athletic-dim'
+      );
+      text.innerText = message;
+    }
+
+    function describeLiveAge(iso) {
+      const when = new Date(iso);
+      if (isNaN(when.getTime())) return 'unknown time';
+      const mins = Math.round((Date.now() - when.getTime()) / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return `${mins} min ago`;
+      const hrs = Math.round(mins / 60);
+      if (hrs < 24) return `${hrs} hr ago`;
+      return `${Math.round(hrs / 24)} day(s) ago`;
+    }
+
+    const CLOUD_VENUES = ["5812c8bc-dfe5-4e9f-9b7f-59da95a76efb", "fbc00051-e9e1-4ecd-a39f-89ac01a30aaa", "cb5e7b37-1719-4a18-963e-06c02ff3d448", "0cde9299-793e-40ce-a1a2-7c1d374d542c", "af6cb5a6-7262-4502-9f65-b35de3a026f1", "eec48bf0-423a-4824-bc9a-61fa57d672d6", "d5c4c969-3ea4-434a-8d89-3a14e44d03b6"];
+    let cloudRequest = null;
+    function loadCloudFeed() {
+      if (cloudRequest) return cloudRequest;
+      cloudRequest = (async () => {
+        const results=[];
+        // Two venues at a time keeps upstream traffic modest.
+        for(let i=0;i<CLOUD_VENUES.length;i+=2){
+          const batch=await Promise.all(CLOUD_VENUES.slice(i,i+2).map(async id=>{
+            const response=await fetch('/api/venue?hub='+encodeURIComponent(id),{cache:'no-store'});
+            if(!response.ok)throw new Error('Live provider check unavailable. Please try again shortly.');
+            const data=await response.json();
+            if(data.verificationVersion!==2 || !Array.isArray(data.openings))throw new Error('Unverified feed');
+            return data;
+          }));results.push(...batch);
+        }
+        return {verificationVersion:2,updatedAt:new Date().toISOString(),hubsChecked:results.length,
+          daysAhead:14,openings:results.flatMap(r=>r.openings),verifiedVenues:results.flatMap(r=>r.verifiedVenues||[])};
+      })().finally(()=>{cloudRequest=null;});
+      return cloudRequest;
+    }
+    async function loadLiveOpenings(showMessage) {
+      updateLiveBar('wait', 'Loading openings.json...');
+      try {
+        const data = await loadCloudFeed();
+        if (data.verificationVersion !== 2 || !Array.isArray(data.openings)) throw new Error('Feed requires a new verified scrape');
+        const rawList = data.openings.filter(slot => slot.availabilityVerified === true && Array.isArray(slot.courtsFree) && slot.courtsFree.length > 0 &&
+          Number.isFinite(Date.parse(slot.checkedAt)) && Date.now() - Date.parse(slot.checkedAt) < 35 * 60000);
+        const { twoHourOpenings } = await import('./availability.js');
+        const list = twoHourOpenings(rawList);
+        if (!Array.isArray(list)) throw new Error('Invalid openings data');
+
+        liveOpenings = list.map((slot, i) => ({
+          id: slot.id || `live-${i}`,
+          venueName: slot.venueName || '360 Sports venue',
+          municipality: slot.municipality || 'Cavite',
+          address: slot.address || '',
+          platform: slot.platform || '360 Sports',
+          day: slot.day || '',
+          dateIso: slot.dateIso || '',
+          dateStr: slot.dateStr || '',
+          timeSlot: slot.timeSlot || '',
+          fromTime: slot.fromTime || '',
+          endTime: slot.endTime || '',
+          hourlyRate: slot.hourlyRate ?? null,
+          priceAdvertised: slot.priceAdvertised || 'Check venue',
+          distanceKm: slot.distanceKm ?? null,
+          capacity: slot.capacity ?? null,
+          status: slot.status || 'Available',
+          favorite: slot.favorite === true,
+          bookingUrl: slot.bookingUrl || 'https://app.sports360.ph/public-court-rental',
+          facebookUrl: slot.facebookUrl || '',
+          environment: slot.environment || '',
+          surface: slot.surface || '',
+          amenities: Array.isArray(slot.amenities) ? slot.amenities : [],
+          courtsFree: slot.courtsFree || [],
+          checkedAt: slot.checkedAt,
+          availabilityVerified: true,
+          courtsTotal: slot.courtsTotal || null
+        }));
+
+        liveUpdatedAt = data.updatedAt || null;
+        courtSlots = liveOpenings;
+        verifiedVenues = directoryFromLiveData(data, liveOpenings);
+        renderVenuesDirectory();
+        clearTimeout(liveExpiryTimer);
+        if (liveOpenings.length) {
+          const expires = Math.min(...liveOpenings.map(s => Date.parse(s.checkedAt))) + 35 * 60000;
+          liveExpiryTimer = setTimeout(() => {
+            courtSlots = []; liveOpenings = []; applyFilters(); renderComparisonTable();
+            updateLiveBar('error', 'Availability expired — press Check now for verified results');
+          }, Math.max(0, expires - Date.now()));
+        }
+        const priorityCount = liveOpenings.filter(slot => [0, 6].includes(new Date(slot.dateIso + 'T00:00:00Z').getUTCDay()) && isPriorityTime(slot)).length;
+        updateLiveBar('live', `360 Sports: ${priorityCount} Sat/Sun 4–10 PM two-hour slots (${liveOpenings.length} total) - scraped ${describeLiveAge(liveUpdatedAt)}`);
+        if (showMessage) showToast(`Loaded ${liveOpenings.length} live openings from 360 Sports`);
+        return true;
+      } catch (error) {
+        courtSlots = []; liveOpenings = []; clearTimeout(liveExpiryTimer);
+        updateLiveBar('error', 'Live availability unavailable — press Check now; no unverified slots shown');
+        if (showMessage) showToast('No verified live results. Please use Check now.');
+        return false;
+      }
+    }
+
+    let filters = {
+      platform: '360 Sports',
+      selectedDate: '',
+      location: 'ALL',
+      environment: 'ALL',
+      radius: 10,
+      minPrice: 300,
+      maxPrice: 600,
+      sat: true,
+      sun: true,
+      capacity6: true,
+      favoritesOnly: false,
+      showOverbudget: true
+    };
+
+    /* "Bacoor" from the scraper and "Bacoor City" from the sample list should
+       count as the same place when the location filter is used. */
+    function cityKey(name) {
+      return String(name || '')
+        .toLowerCase()
+        .replace(/\b(city|municipality)\b/g, '')
+        .replace(/[^a-z]/g, '');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    /* ============================================================
+       DYNAMIC REAL-TIME WEEKEND DATE GENERATOR
+       ============================================================ */
+    function getUpcomingWeekendDates() {
+      const today = new Date();
+      const currentDay = today.getDay(); // 0 is Sun, 6 is Sat
+
+      const satDiff = (6 - currentDay + 7) % 7;
+      const sat = new Date(today);
+      sat.setDate(today.getDate() + satDiff);
+
+      let sunDiff = (0 - currentDay + 7) % 7;
+      if (currentDay === 0) sunDiff = 0;
+      else if (sunDiff === 0) sunDiff = 7;
+      const sun = new Date(today);
+      sun.setDate(today.getDate() + sunDiff);
+
+      const formatIso = (d) => {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      };
+
+      const formatStr = (d, dayName) => {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${dayName}, ${months[d.getMonth()]} ${d.getDate()}`;
+      };
+
+      return {
+        satIso: formatIso(sat),
+        satStr: formatStr(sat, 'Sat'),
+        sunIso: formatIso(sun),
+        sunStr: formatStr(sun, 'Sun')
+      };
+    }
+
+    function updateQuickDateButtons(activeType) {
+      const btnSat = document.getElementById('btn-quick-sat');
+      const btnSun = document.getElementById('btn-quick-sun');
+      const btnAll = document.getElementById('btn-quick-all');
+
+      const inactive = 'px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-slate-300 transition cursor-pointer';
+      const active = 'px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-athletic-volt text-black transition cursor-pointer';
+
+      if (btnSat) btnSat.className = activeType === 'sat' ? active : inactive;
+      if (btnSun) btnSun.className = activeType === 'sun' ? active : inactive;
+      if (btnAll) btnAll.className = activeType === 'all' ? active : inactive;
+    }
+
+    function setQuickDate(dayType) {
+      const dates = getUpcomingWeekendDates();
+      const input = document.getElementById('filter-date');
+      if (input) {
+        input.value = dayType === 'sat' ? dates.satIso : dates.sunIso;
+      }
+      updateQuickDateButtons(dayType);
+      applyFilters();
+    }
+
+    function clearDateFilter() {
+      const input = document.getElementById('filter-date');
+      if (input) input.value = '';
+      updateQuickDateButtons('all');
+      applyFilters();
+    }
+
+    function setEnvironmentFilter(env) {
+      filters.environment = env;
+      const envTypes = ['ALL', 'Indoor AC', 'Covered', 'Outdoor'];
+      envTypes.forEach(t => {
+        const btn = document.getElementById(`env-pill-${t}`);
+        if (!btn) return;
+        if (t === env) {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-athletic-volt text-black transition cursor-pointer flex items-center gap-1.5';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition cursor-pointer flex items-center gap-1.5';
+        }
+      });
+      applyFilters();
+    }
+
+    /* ============================================================
+       TAB NAVIGATION
+       ============================================================ */
+    function switchTab(tabId) {
+      const tabs = ['dashboard', 'telegram', 'explorer', 'comparison', 'logger', 'settings'];
+
+      tabs.forEach(id => {
+        const section = document.getElementById(`tab-${id}`);
+        const desktopBtn = document.getElementById(`nav-${id}`);
+        const mobileBtn = document.getElementById(`mob-${id}`);
+
+        if (section) section.classList.toggle('hidden', id !== tabId);
+
+        if (desktopBtn) {
+          if (id === tabId) {
+            desktopBtn.className = id === 'telegram'
+              ? 'nav-tab relative px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-[#229ED9] text-white shadow-[0_0_20px_rgba(34,158,217,0.4)]'
+              : 'nav-tab px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-athletic-volt text-slate-950';
+          } else {
+            desktopBtn.className = id === 'telegram'
+              ? 'nav-tab relative px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-400/30'
+              : 'nav-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold text-athletic-muted hover:text-white hover:bg-athletic-elevated transition flex items-center gap-2';
+          }
+        }
+
+        if (mobileBtn) {
+          if (id === tabId) {
+            mobileBtn.className = id === 'telegram'
+              ? 'mobile-nav-tab px-3 py-1.5 rounded-lg font-bold bg-[#229ED9] text-white whitespace-nowrap flex items-center gap-1.5'
+              : 'mobile-nav-tab px-3 py-1.5 rounded-lg font-bold bg-athletic-volt text-slate-950 whitespace-nowrap';
+          } else {
+            mobileBtn.className = id === 'telegram'
+              ? 'mobile-nav-tab px-3 py-1.5 rounded-lg font-bold text-sky-300 bg-sky-500/20 border border-sky-400/40 whitespace-nowrap flex items-center gap-1.5'
+              : 'mobile-nav-tab px-3 py-1.5 rounded-lg text-athletic-muted hover:bg-athletic-elevated whitespace-nowrap';
+          }
+        }
+      });
+
+      document.querySelectorAll('.main-nav button').forEach(btn => {
+        if (btn.id === `nav-${tabId}`) btn.setAttribute('aria-current', 'page'); else btn.removeAttribute('aria-current');
+      });
+      document.getElementById('secondary-menu').open = false;
+      if (tabId === 'explorer') renderVenuesDirectory();
+      if (tabId === 'comparison') renderComparisonTable();
+      if (tabId === 'dashboard') renderSlots();
+    }
+
+    /* ============================================================
+       FILTERING & RESILIENT DATE MATCHING
+       ============================================================ */
+    function applyFilters() {
+      filters.platform = document.getElementById('filter-platform').value;
+      filters.selectedDate = document.getElementById('filter-date').value;
+      filters.location = document.getElementById('filter-location').value;
+
+      const minVal = parseInt(document.getElementById('filter-min-price').value, 10);
+      const maxVal = parseInt(document.getElementById('filter-max-price').value, 10);
+      filters.minPrice = isNaN(minVal) ? 0 : minVal;
+      filters.maxPrice = isNaN(maxVal) ? 9999 : maxVal;
+
+      // These checkboxes are not on the page, so fall back to the defaults (true)
+      filters.sat = document.getElementById('filter-day-sat')?.checked ?? true;
+      filters.sun = document.getElementById('filter-day-sun')?.checked ?? true;
+      filters.capacity6 = document.getElementById('filter-capacity-6')?.checked ?? true;
+      filters.favoritesOnly = document.getElementById('filter-favorites-only').checked;
+      filters.showOverbudget = document.getElementById('toggle-show-overbudget').checked;
+
+      // Sync active state of quick pills
+      const dates = getUpcomingWeekendDates();
+      if (filters.selectedDate === dates.satIso) {
+        updateQuickDateButtons('sat');
+      } else if (filters.selectedDate === dates.sunIso) {
+        updateQuickDateButtons('sun');
+      } else if (!filters.selectedDate) {
+        updateQuickDateButtons('all');
+      } else {
+        updateQuickDateButtons(null);
+      }
+
+      document.getElementById('budget-range-label').innerText = `₱${filters.minPrice} – ₱${filters.maxPrice}`;
+      document.getElementById('stat-budget-text').innerText = `₱${filters.minPrice} – ₱${filters.maxPrice} / hr`;
+
+      if (filters.selectedDate) {
+        document.getElementById('stat-schedule-text').innerText = filters.selectedDate;
+        document.getElementById('stat-date-subtext').innerText = 'Selected Target Date';
+      } else {
+        document.getElementById('stat-schedule-text').innerText = 'Sat & Sun (4–10 PM)';
+        document.getElementById('stat-date-subtext').innerText = 'Weekend Focus';
+      }
+
+      renderSlots();
+    }
+
+    function resetFilters() {
+      document.getElementById('filter-platform').value = '360 Sports';
+      document.getElementById('filter-date').value = '';
+      document.getElementById('filter-location').value = 'ALL';
+      document.getElementById('filter-min-price').value = 300;
+      document.getElementById('filter-max-price').value = 600;
+      if (document.getElementById('filter-day-sat')) document.getElementById('filter-day-sat').checked = true;
+      if (document.getElementById('filter-day-sun')) document.getElementById('filter-day-sun').checked = true;
+      if (document.getElementById('filter-capacity-6')) document.getElementById('filter-capacity-6').checked = true;
+      document.getElementById('filter-favorites-only').checked = false;
+      document.getElementById('toggle-show-overbudget').checked = true;
+
+      setEnvironmentFilter('ALL');
+      updateQuickDateButtons('all');
+      applyFilters();
+      showToast('Filters reset to default');
+    }
+
+    /* ============================================================
+       RENDER SLOTS WITH VENUE ATTRIBUTE & AMENITY BADGES
+       ============================================================ */
+    function slotMinutes(slot, end = false) {
+      const raw = end ? slot.endTime : slot.fromTime;
+      if (raw && /^\d{2}:\d{2}/.test(raw)) {
+        const [h, m] = raw.split(':').map(Number);
+        return h * 60 + m;
+      }
+      const parts = (slot.timeSlot || '').match(/(\d{1,2}):(\d{2})\s*(AM|PM)/gi) || [];
+      const match = (parts[end ? 1 : 0] || '').match(/(\d+):(\d+)\s*(AM|PM)/i);
+      return match ? (Number(match[1]) % 12 + (match[3].toUpperCase() === 'PM' ? 12 : 0)) * 60 + Number(match[2]) : NaN;
+    }
+
+    function isPriorityTime(slot) {
+      const start = slotMinutes(slot), end = slotMinutes(slot, true);
+      return start >= 16 * 60 && end <= 22 * 60 && end - start >= 120;
+    }
+
+    function renderSlots() {
+      const grid = document.getElementById('slots-grid');
+      const overbudgetGrid = document.getElementById('overbudget-grid');
+      const overbudgetSection = document.getElementById('overbudget-section');
+
+      grid.innerHTML = '';
+      overbudgetGrid.innerHTML = '';
+
+      let matched = [];
+      let outsideRange = [];
+
+      courtSlots.forEach(slot => {
+        if (slot.availabilityVerified !== true || !slot.courtsFree?.length || !Number.isFinite(Date.parse(slot.checkedAt)) || Date.now() - Date.parse(slot.checkedAt) >= 35 * 60000) return;
+        if (filters.platform !== 'ALL' && slot.platform !== filters.platform) return;
+        if (filters.location !== 'ALL' && cityKey(slot.municipality) !== cityKey(filters.location)) return;
+        if (filters.environment !== 'ALL' && slot.environment !== filters.environment) return;
+
+        // Exact dates prevent another weekend's slots matching a selected date.
+        const showAllDays = document.getElementById('show-all-days')?.checked ?? false;
+        if (filters.selectedDate && slot.dateIso !== filters.selectedDate) return;
+        if (!showAllDays) {
+          const actualDay = new Date(slot.dateIso + 'T00:00:00Z').getUTCDay();
+          if (!((actualDay === 6 && filters.sat) || (actualDay === 0 && filters.sun))) return;
+          if (!isPriorityTime(slot)) return;
+        }
+        if (slot.fromTime && slot.dateIso &&
+            new Date(slot.dateIso + 'T' + slot.fromTime + ':00+08:00').getTime() <= Date.now()) return;
+
+        // Live rows have no distance figure, so only the sample rows are distance-filtered.
+        if (Number.isFinite(slot.distanceKm) && slot.distanceKm > filters.radius) return;
+        if (filters.capacity6 && slot.capacity != null && slot.capacity < 6) return;
+        if (filters.favoritesOnly && !slot.favorite) return;
+
+        const inPriceRange = slot.hourlyRate === null
+          ? true // 360 Sports does not publish rates, so never hide a real slot for it
+          : (slot.hourlyRate >= filters.minPrice && slot.hourlyRate <= filters.maxPrice);
+
+        if (inPriceRange) {
+          matched.push(slot);
+        } else {
+          outsideRange.push(slot);
+        }
+      });
+
+      matched.sort((a, b) => {
+        if (a.dateIso !== b.dateIso) return a.dateIso < b.dateIso ? -1 : 1;
+        if (slotMinutes(a) !== slotMinutes(b)) return slotMinutes(a) - slotMinutes(b);
+        return (a.venueName || '') < (b.venueName || '') ? -1 : 1;
+      });
+
+      const matchedGroups = groupVenueOpenings(matched);
+      const outsideGroups = groupVenueOpenings(outsideRange);
+      document.getElementById('stat-matches-count').innerText = matchedGroups.length;
+      document.getElementById('results-count-badge').innerText = matchedGroups.length;
+
+      if (matched.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full bg-athletic-charcoal border border-athletic-border rounded-2xl p-8 text-center space-y-3">
+            <div class="w-10 h-10 mx-auto rounded-full bg-athletic-void border border-athletic-border flex items-center justify-center text-athletic-dim text-sm">
+              <i class="fa-solid fa-calendar-xmark"></i>
+            </div>
+            <div class="text-white font-bold text-xs uppercase tracking-wider">No verified available courts</div>
+            <p class="text-[11px] text-athletic-dim">No verified live court matches this selection. Use Check now to refresh availability.</p>
+            <div class="pt-1">
+              <button onclick="resetFilters()" class="px-4 py-2 rounded-xl bg-athletic-volt text-slate-950 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+                Reset All Filters
+              </button>
+            </div>
+          </div>
+        `;
+      } else {
+        matchedGroups.forEach(group => grid.appendChild(createSlotCard(group, false)));
+      }
+
+      if (filters.showOverbudget && outsideRange.length > 0) {
+        overbudgetSection.classList.remove('hidden');
+        outsideGroups.forEach(group => overbudgetGrid.appendChild(createSlotCard(group, true)));
+      } else {
+        overbudgetSection.classList.add('hidden');
+      }
+    }
+
+    const VERIFIED_FACEBOOK_PAGES = {
+      'issy dink|bacoor': 'https://www.facebook.com/profile.php?id=61592265626166',
+      'kitchen barn pickleball|imus': 'https://www.facebook.com/profile.php?id=61591105632606'
+    };
+    function facebookVenueKey(slot) {
+      return `${(slot.venueName || '').trim().toLowerCase()}|${cityKey(slot.municipality)}`;
+    }
+    function validFacebookPage(value) {
+      try {
+        const url = new URL(value);
+        if (url.protocol !== 'https:' || url.username || url.password ||
+            !['facebook.com', 'www.facebook.com', 'm.facebook.com', 'web.facebook.com'].includes(url.hostname)) return '';
+        if (url.pathname === '/' || url.pathname.startsWith('/search')) return '';
+        return url.href;
+      } catch { return ''; }
+    }
+    function facebookVenueLink(slot) {
+      let saved = {};
+      try { saved = JSON.parse(localStorage.getItem('tsc_venue_facebook_pages') || '{}') || {}; } catch {}
+      const key = facebookVenueKey(slot);
+      const direct = validFacebookPage(saved[key]) || validFacebookPage(slot.facebookUrl) || VERIFIED_FACEBOOK_PAGES[key];
+      return { direct: !!direct, url: direct || 'https://www.facebook.com/search/pages/?q=' + encodeURIComponent(`${slot.venueName} ${slot.municipality} pickleball`) };
+    }
+    function setVenueFacebookPage(slotId) {
+      const slot = courtSlots.find(s => s.id === slotId);
+      if (!slot) return;
+      const existing = facebookVenueLink(slot);
+      const value = prompt(`Facebook page for ${slot.venueName} (leave blank to remove your saved link):`, existing.direct ? existing.url : '');
+      if (value === null) return;
+      const url = value.trim() ? validFacebookPage(value.trim()) : '';
+      if (value.trim() && !url) { showToast('Please enter an HTTPS Facebook page link.'); return; }
+      try {
+        const saved = JSON.parse(localStorage.getItem('tsc_venue_facebook_pages') || '{}') || {};
+        const key = facebookVenueKey(slot);
+        if (url) saved[key] = url; else delete saved[key];
+        localStorage.setItem('tsc_venue_facebook_pages', JSON.stringify(saved));
+        renderSlots(); showToast(url ? 'Facebook page saved for this venue.' : 'Saved link removed.');
+      } catch { showToast('Could not save this link in your browser.'); }
+    }
+    function venuePriceLink(slot) {
+      const link = facebookVenueLink(slot);
+      const price = slot.priceAdvertised || 'Check venue';
+      const label = price === 'Check venue' ? 'Check venue' : 'View venue';
+      const title = link.direct ? 'Open venue Facebook page (new tab)' : 'Find venue on Facebook (new tab; direct page not yet verified)';
+      const anchor = `<a class="venue-facebook-link" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer" title="${title}" aria-label="${escapeHtml(label + ' — ' + slot.venueName + (link.direct ? ' Facebook page' : ' Facebook search'))}">${label} <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>`;
+      return price === 'Check venue' ? anchor : `<span>${escapeHtml(price)}</span>${anchor}`;
+    }
+
+    const selectedVenueSlots = new Map();
+    function bookingPortal(slot) {
+      try {
+        const host = new URL(slot.bookingUrl).hostname.toLowerCase();
+        if (host === 'app.sports360.ph' || host === 'sports360.ph') return '360 Sports portal';
+        if (host === 'reclub.co' || host.endsWith('.reclub.co')) return 'Reclub';
+        if (host === 'courtmatchph.com' || host.endsWith('.courtmatchph.com')) return 'CourtMatch PH';
+        if (host === 'pikort.ph' || host.endsWith('.pikort.ph')) return 'Pikort.ph';
+      } catch {}
+      return slot.platform || 'Booking portal';
+    }
+    function groupVenueOpenings(slots) {
+      const groups = new Map();
+      slots.forEach(slot => {
+        // Dates and courts stay on each original option. No inferred continuous ranges.
+        const key = JSON.stringify([(slot.venueName || '').trim().toLowerCase(), cityKey(slot.municipality),
+          bookingPortal(slot), slot.bookingUrl || '']);
+        if (!groups.has(key)) groups.set(key, { key, slots: [] });
+        groups.get(key).slots.push(slot);
+      });
+      for (const group of groups.values()) group.slots.sort((a,b) =>
+        (a.dateIso || '').localeCompare(b.dateIso || '') || slotMinutes(a) - slotMinutes(b));
+      return [...groups.values()];
+    }
+    function createSlotCard(group, isOutOfRange) {
+      const card = document.createElement('article');
+      card.className = `court-card bg-athletic-charcoal border border-athletic-border p-4 rounded-xl flex flex-col justify-between ${isOutOfRange ? 'opacity-75' : ''}`;
+      const first = group.slots[0];
+      let selected = group.slots.find(s => s.id === selectedVenueSlots.get(group.key)) || first;
+      const anyFavorite = group.slots.some(s => s.favorite);
+      card.innerHTML = `
+        <div class="court-title"><div><h3>${escapeHtml(first.venueName)}</h3><p>${escapeHtml(first.municipality)}</p></div><button class="favorite-button ${anyFavorite ? 'is-favorite' : ''}" aria-label="${anyFavorite ? 'Remove venue favorite' : 'Save venue favorite'}"><i class="${anyFavorite ? 'fa-solid' : 'fa-regular'} fa-star"></i></button></div>
+        <div class="venue-options"><label><span class="slot-count">${group.slots.length} available ${group.slots.length === 1 ? 'time' : 'times'}</span><select class="venue-time-select" aria-label="Available dates and times for ${escapeHtml(first.venueName)}">${group.slots.map((slot,index) => `<option value="${index}" ${slot.id === selected.id ? 'selected' : ''}>${escapeHtml(slot.dateStr)} · ${escapeHtml(slot.timeSlot)}</option>`).join('')}</select></label><p class="time-option-note">Courts shown are free for the full selected session.</p></div>
+        <div class="court-meta"><span class="selected-courts"></span><span class="venue-price"></span></div>
+        <div class="court-actions"><button class="book-button">Book Now <i class="fa-solid fa-arrow-up-right-from-square"></i></button><div class="venue-quick-links"><button class="telegram-button" aria-label="Share selected time on Telegram"><i class="fa-brands fa-telegram"></i> Telegram</button><a class="google-maps-link" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Google Maps</a></div><details class="card-more"><summary aria-label="More slot actions"><i class="fa-solid fa-ellipsis"></i></summary><div><button class="share-slot">Copy to share</button><button class="set-facebook">Set Facebook page</button></div></details></div>
+        <p class="booking-portal"></p>`;
+      function updateSelection() {
+        const mapsLink = card.querySelector('.google-maps-link');
+        mapsLink.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([selected.venueName, selected.municipality, 'Cavite', 'Philippines'].filter(Boolean).join(', '));
+        mapsLink.setAttribute('aria-label', 'Find ' + selected.venueName + ' in Google Maps (opens in a new tab)');
+        card.querySelector('.selected-courts').textContent = selected.courtsFree?.length
+          ? 'Court ' + [...new Set(selected.courtsFree)].join(', ') + ' available' : 'Check court details';
+        card.querySelector('.venue-price').innerHTML = venuePriceLink(selected);
+        card.querySelector('.booking-portal').textContent = 'Book via ' + bookingPortal(selected);
+        card.querySelector('.time-option-note').textContent = 'Free for the full session · Checked ' + new Date(selected.checkedAt).toLocaleTimeString('en-PH', {hour:'2-digit',minute:'2-digit',timeZone:'Asia/Manila'}) + ' PHT';
+        card.querySelector('.book-button').setAttribute('aria-label', 'Book Now via ' + bookingPortal(selected) + ' — ' + selected.dateStr + ', ' + selected.timeSlot);
+      }
+      card.querySelector('select').addEventListener('change', event => {
+        selected = group.slots[Number(event.target.value)];
+        selectedVenueSlots.set(group.key, selected.id); updateSelection();
+      });
+      card.querySelector('.book-button').addEventListener('click', () => openBookingRedirect(selected.venueName,
+        selected.platform, selected.dateStr + ' • ' + selected.timeSlot, selected.priceAdvertised, selected.bookingUrl));
+      card.querySelector('.telegram-button').addEventListener('click', () => dispatchDirectTelegramAlert(selected.id));
+      card.querySelector('.share-slot').addEventListener('click', () => shareToMessenger(selected.id));
+      card.querySelector('.set-facebook').addEventListener('click', () => setVenueFacebookPage(selected.id));
+      card.querySelector('.favorite-button').addEventListener('click', () => {
+        group.slots.forEach(slot => { slot.favorite = !anyFavorite; }); renderSlots();
+      });
+      updateSelection();
+      return card;
+    }
+
+    function toggleFavorite(slotId) {
+      const slot = courtSlots.find(s => s.id === slotId);
+      if (slot) {
+        slot.favorite = !slot.favorite;
+        renderSlots();
+        showToast(slot.favorite ? `Saved to circuit favorites` : `Removed from favorites`);
+      }
+    }
+
+    /* ============================================================
+       DIRECTORY & MATRIX TABLES (WITH ATTRIBUTE BADGES)
+       ============================================================ */
+    function renderVenuesDirectory() {
+      const tbody = document.getElementById('venues-directory-body');
+      if (!tbody) return;
+
+      if (!verifiedVenues.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-5 text-athletic-dim">No verified directory loaded. Use Check now on the Courts tab.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = verifiedVenues.map(venue => `
+        <tr class="border-b border-athletic-border text-xs">
+          <td class="p-3"><div class="font-bold text-white">${escapeHtml(venue.name)}</div><div class="text-athletic-dim mt-1">${escapeHtml(venue.address || '')}</div></td>
+          <td class="p-3 text-athletic-muted">${escapeHtml(venue.municipality)}</td>
+          <td class="p-3 text-athletic-muted">360 Sports</td>
+          <td class="p-3 text-athletic-muted">${Number.isInteger(venue.courtsTotal) ? venue.courtsTotal : 'Not listed'}</td>
+          <td class="p-3 text-right"><a class="text-athletic-volt underline" href="${escapeHtml(venue.bookingUrl)}" target="_blank" rel="noopener noreferrer">View venue</a></td>
+        </tr>`).join('');
+    }
+
+    function renderComparisonTable() {
+      const tbody = document.getElementById('comparison-table-body');
+      if (!tbody) return;
+
+      const sorted = [...courtSlots].sort((a, b) => {
+        if (a.hourlyRate === null) return 1;
+        if (b.hourlyRate === null) return -1;
+        return a.hourlyRate - b.hourlyRate;
+      });
+
+      tbody.innerHTML = sorted.map((s, idx) => {
+        const inRange = s.hourlyRate !== null && s.hourlyRate >= filters.minPrice && s.hourlyRate <= filters.maxPrice;
+
+        return `
+          <tr class="hover:bg-athletic-elevated/40 transition border-b border-athletic-border text-xs">
+            <td class="p-3 font-semibold text-white flex items-center gap-2">
+              <span class="text-athletic-dim font-mono text-[10px]">#${idx + 1}</span>
+              <span>${s.venueName}</span>
+            </td>
+            <td class="p-3 text-athletic-muted">${s.municipality}</td>
+            <td class="p-3 text-athletic-dim font-mono text-[11px]">${s.platform}</td>
+            <td class="p-3 font-mono text-slate-300">${s.priceAdvertised}</td>
+            <td class="p-3 font-mono font-bold ${inRange ? 'text-athletic-volt' : 'text-athletic-dim'}">
+              ${s.hourlyRate ? `₱${s.hourlyRate} / hr` : '—'}
+            </td>
+            <td class="p-3 text-[10px] font-mono text-slate-300">${s.environment || 'Covered'}</td>
+            <td class="p-3 text-right">
+              <button onclick="dispatchDirectTelegramAlert('${s.id}')" class="text-sky-400 hover:text-white text-xs font-bold mr-2 cursor-pointer">
+                Telegram
+              </button>
+              <button onclick="openBookingRedirect('${s.venueName}', '${s.platform}', '${s.dateStr}', '${s.priceAdvertised}', '${s.bookingUrl}')" class="text-athletic-volt hover:underline text-[11px] uppercase font-bold cursor-pointer">
+                Book
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    /* ============================================================
+       LOG DISCOVERED SLOT
+       ============================================================ */
+    function handleManualSlotSubmit(e) {
+      e.preventDefault();
+
+      const venue = document.getElementById('log-venue').value;
+      const location = document.getElementById('log-location').value;
+      const env = document.getElementById('log-env').value;
+      const surface = document.getElementById('log-surface').value;
+      const amenitiesStr = document.getElementById('log-amenities').value;
+      const platform = document.getElementById('log-platform').value;
+      const day = document.getElementById('log-day').value;
+      const timeSlot = document.getElementById('log-time').value;
+      const price = parseInt(document.getElementById('log-price').value, 10);
+      const capacity = parseInt(document.getElementById('log-capacity').value, 10) || 6;
+      const status = document.getElementById('log-status').value;
+      const url = document.getElementById('log-url').value || 'https://pikort.ph';
+
+      const dates = getUpcomingWeekendDates();
+
+      const amenityList = amenitiesStr 
+        ? amenitiesStr.split(',').map(a => a.trim()).filter(Boolean)
+        : ['Free Parking', 'LED Lights'];
+
+      const newSlot = {
+        id: 'slot-' + Date.now(),
+        venueName: venue,
+        municipality: location,
+        environment: env,
+        surface: surface,
+        amenities: amenityList,
+        platform: platform,
+        day: day,
+        dateIso: day === 'Saturday' ? dates.satIso : dates.sunIso,
+        dateStr: day === 'Saturday' ? dates.satStr : dates.sunStr,
+        timeSlot: timeSlot,
+        priceAdvertised: `₱${price} / hr`,
+        hourlyRate: price,
+        distanceKm: 2.5,
+        capacity: capacity,
+        status: status,
+        favorite: false,
+        bookingUrl: url
+      };
+
+      courtSlots.unshift(newSlot);
+      saveSlots();
+      document.getElementById('slot-logger-form').reset();
+      showToast(`✓ ${venue} saved — ${day}, ${timeSlot}`);
+      switchTab('dashboard');
+      renderSlots();
+    }
+
+    /* ============================================================
+       TELEGRAM API INTEGRATION (WITH VENUE AMENITIES IN PAYLOAD)
+       ============================================================ */
+    function dispatchDirectTelegramAlert(slotId) {
+      const slot=courtSlots.find(s=>s.id===slotId);
+      if(!slot)return;
+      const message=[slot.venueName,slot.municipality,slot.dateStr,slot.timeSlot,'Court '+slot.courtsFree.join(', '),'Checked '+new Date(slot.checkedAt).toLocaleString('en-PH',{timeZone:'Asia/Manila'})+' PHT'].join(' · ');
+      window.open('https://t.me/share/url?url='+encodeURIComponent(slot.bookingUrl)+'&text='+encodeURIComponent(message),'_blank','noopener,noreferrer');
+    }
+
+    function shareToMessenger(slotId) {
+      const slot = courtSlots.find(s => s.id === slotId);
+      if (!slot) return;
+      const amenitiesStr = (slot.amenities || []).join(', ');
+      const text = `🎾 TSC COURT ALERT!
+📍 ${slot.venueName} (${slot.municipality})
+🗓 ${slot.dateStr} • ${slot.timeSlot}
+💰 ${slot.priceAdvertised}
+🏸 Setting: ${slot.environment} (${slot.surface})
+✨ Amenities: ${amenitiesStr}
+🏷 ${slot.platform}
+👉 Link: ${slot.bookingUrl}`;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✓ Copied details! Paste into Messenger group');
+      });
+    }
+
+    function shareToViber(slotId) {
+      const slot = courtSlots.find(s => s.id === slotId);
+      if (!slot) return;
+      const amenitiesStr = (slot.amenities || []).join(', ');
+      const text = `🎾 TSC COURT ALERT!
+📍 ${slot.venueName} (${slot.municipality})
+🗓 ${slot.dateStr} • ${slot.timeSlot}
+💰 ${slot.priceAdvertised}
+🏸 Setting: ${slot.environment} (${slot.surface})
+✨ Amenities: ${amenitiesStr}
+🏷 ${slot.platform}
+👉 Link: ${slot.bookingUrl}`;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('✓ Copied details! Opening Viber...');
+        window.open(`viber://forward?text=${encodeURIComponent(text)}`, '_blank');
+      });
+    }
+
+    function openBookingRedirect(venue, platform, time, price, url) {
+      document.getElementById('modal-venue-name').innerText = venue;
+      document.getElementById('modal-slot-time').innerText = time;
+      document.getElementById('modal-slot-price').innerText = price;
+      document.getElementById('modal-direct-link').href = url;
+      document.getElementById('booking-modal').classList.remove('hidden');
+    }
+
+    // Public URLs use same-origin API paths. Keep the existing desktop server compatible.
+    const SCRAPE_API_BASE = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname) && location.port === '8080'
+      ? 'http://127.0.0.1:8081' : '';
+    let lastScrapeCompleted = null;
+    function showScrapeState(state) {
+      const btn = document.getElementById('check-now-btn');
+      btn.disabled = state.running;
+      document.getElementById('refresh-icon').classList.toggle('fa-spin', state.running);
+      const next = state.nextRunAt ? new Date(state.nextRunAt).toLocaleTimeString('en-PH', {hour:'2-digit',minute:'2-digit',timeZone:'Asia/Manila'}) : 'soon';
+      document.getElementById('scrape-status').innerText = state.running
+        ? 'Checking live availability… results appear when complete'
+        : state.lastError ? 'Scrape failed. No verified results shown; retry with Check now.'
+        : `Auto-check every 30 minutes · Next: ${next} · Minimum 2 continuous hours`;
+      if (state.lastError) { courtSlots = []; liveOpenings = []; applyFilters(); renderComparisonTable(); updateLiveBar('error', 'Live check failed — press Check now'); return; }
+      if (state.lastCompletedAt && state.lastCompletedAt !== lastScrapeCompleted) {
+        lastScrapeCompleted = state.lastCompletedAt;
+        loadLiveOpenings(false).then(() => { applyFilters(); renderComparisonTable(); });
+      }
+    }
+    async function triggerManualCheck() {
+      const btn=document.getElementById('check-now-btn');
+      if(btn.disabled)return;
+      btn.disabled=true;
+      document.getElementById('refresh-icon').classList.add('fa-spin');
+      document.getElementById('scrape-status').innerText='Checking live availability…';
+      try {
+        const loaded=await loadLiveOpenings(false);applyFilters();renderComparisonTable();
+        document.getElementById('scrape-status').innerText=loaded
+          ? 'Auto-check every 30 minutes · Recent checks may be reused for up to 2 minutes · Minimum 2 continuous hours'
+          : 'Live check unavailable. Please try Check now again shortly.';
+      } finally {
+        btn.disabled=false;document.getElementById('refresh-icon').classList.remove('fa-spin');
+      }
+    }
+
+    function downloadOpeningsJson() {
+      const openings = courtSlots.map(slot => ({
+        id: slot.id,
+        venueName: slot.venueName,
+        municipality: slot.municipality,
+        day: slot.day || '',
+        dateIso: slot.dateIso || '',
+        dateStr: slot.dateStr || '',
+        timeSlot: slot.timeSlot || '',
+        hourlyRate: slot.hourlyRate ?? null,
+        priceAdvertised: slot.priceAdvertised || '',
+        platform: slot.platform || '',
+        environment: slot.environment || '',
+        surface: slot.surface || '',
+        status: slot.status || '',
+        bookingUrl: slot.bookingUrl || ''
+      }));
+
+      const payload = {
+        updatedAt: new Date().toISOString(),
+        source: 'TSC Court Finder app export',
+        openings
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'openings.json';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast(`✓ ${openings.length} openings exported — put openings.json in the automation folder`);
+    }
+
+    function openInviteModal() {
+      document.getElementById('invite-modal').classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function copyInviteLink() {
+      const input = document.getElementById('invite-link-input');
+      input.value = location.origin;
+      input.select();
+      document.execCommand('copy');
+      showToast('✓ Website link copied to clipboard');
+      closeModal('invite-modal');
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'bg-athletic-charcoal border border-athletic-volt/40 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 pointer-events-auto transition duration-300';
+      toast.innerHTML = `<span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+
+
+      applyFilters();
+      renderVenuesDirectory();
+      renderComparisonTable();
+      setInterval(triggerManualCheck, 30 * 60000);
+      window.addEventListener('online', triggerManualCheck);
+      document.getElementById('scrape-status').innerText='Auto-check every 30 minutes · 14 days ahead · Minimum 2 continuous hours';
+      /* The live file arrives after the first draw, so redraw once it is in. */
+      loadLiveOpenings(false).then(() => {
+        applyFilters();
+        renderVenuesDirectory();
+        renderComparisonTable();
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
