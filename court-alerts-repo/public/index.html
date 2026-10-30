@@ -85,6 +85,9 @@
     #check-now-btn { display:flex; align-items:center; justify-content:center; gap:8px; flex-shrink:0; min-height:44px; border:1px solid #ffffff25; border-radius:9px; padding:10px 14px; font-size:12px; font-weight:650; } #check-now-btn:disabled { opacity:.5; }
     .filter-panel { border:1px solid #ffffff14; background:#0f1624; padding:20px; border-radius:14px; } .basic-filters { display:grid; grid-template-columns:1fr 1fr; gap:20px; } .basic-filters > div, .advanced-grid > div { min-width:0; }
     .filter-panel input, .filter-panel select { min-height:44px; } .filter-panel input[type=checkbox] { min-height:0; accent-color:#ccff00; }
+    .quick-date-buttons { display:flex; align-items:center; gap:4px; }
+    .quick-date-buttons button { min-height:32px; padding:5px 9px; border-radius:7px; font-size:11px; white-space:nowrap; }
+    .quick-date-buttons button:focus-visible { outline:2px solid #ccff00; outline-offset:2px; }
     .advanced-filters { margin-top:16px; border-top:1px solid #ffffff14; padding-top:12px; } .advanced-filters > summary { display:flex; justify-content:space-between; align-items:center; min-height:36px; color:#b4bfd0; font-size:12px; } .advanced-content { margin-top:16px; } .advanced-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; } .filter-options { display:flex; flex-wrap:wrap; gap:16px; align-items:center; margin:18px 0; font-size:12px; color:#b4bfd0; } .filter-options label { display:flex; align-items:center; gap:8px; min-height:32px; } .filter-options button { margin-left:auto; }
     .advanced-content .flex.items-center.gap-1 { flex-wrap:wrap; }
     .court-card { padding:20px; gap:20px; } .court-title { display:flex; gap:12px; align-items:flex-start; justify-content:space-between; } .court-title h3 { font-size:16px; font-weight:700; line-height:1.5; } .court-title p { color:#8793a8; font-size:12px; margin-top:3px; } .favorite-button { color:#8793a8; min-width:32px; min-height:32px; } .is-favorite { color:#ccff00; }
@@ -100,6 +103,7 @@
     #toast-container { width:calc(100% - 32px); right:16px; bottom:16px; } main, section { min-width:0; } #tab-explorer, #tab-comparison, #tab-telegram, #tab-logger { overflow-wrap:anywhere; } footer { font-size:11px; }
     @media(max-width:900px) { .header-inner { gap:10px; padding:12px 20px; } .brand { font-size:16px; } .secondary-menu { margin-left:auto; order:0; } .main-nav { width:100%; margin-left:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; } .main-nav button { padding:10px 4px; font-size:12px; } }
     @media(max-width:540px) { .header-inner { padding:10px 16px; } .feed-intro { display:block; } .feed-intro h1 { font-size:24px; } .area-note { display:none; } .feed-intro p { font-size:12px; } .feed-status { align-items:stretch; flex-direction:column; gap:12px; } #check-now-btn { align-self:flex-start; } .filter-panel { padding:16px; } .basic-filters,.advanced-grid { grid-template-columns:1fr; gap:18px; } .filter-options { flex-direction:column; align-items:flex-start; gap:6px; } .filter-options button { margin-left:0; min-height:44px; } .court-card { padding:18px; } .court-session strong { font-size:16px; } #tab-dashboard > .space-y-4 > .flex { flex-wrap:wrap; gap:8px; } .settings-panel h1 { font-size:24px; } }
+    @media(max-width:540px) { .date-filter-heading { flex-wrap:wrap; gap:10px; } .quick-date-buttons { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; gap:8px; } .quick-date-buttons button { min-width:0; min-height:44px; padding:8px 4px; font-size:11px; } }
     .venue-facebook-link { color:#b4bfd0; text-decoration:underline; text-underline-offset:3px; display:inline-flex; align-items:center; gap:6px; min-height:32px; }
     .venue-facebook-link:hover { color:#ccff00; } .venue-facebook-link:focus-visible { outline:2px solid #ccff00; outline-offset:3px; border-radius:3px; }
     .venue-facebook-link i { font-size:9px; } .venue-price { display:flex; flex-direction:column; align-items:flex-end; gap:3px; }
@@ -147,16 +151,16 @@
       <div hidden aria-hidden="true"><span id="stat-zone-text"></span><span id="stat-budget-text"></span><span id="stat-schedule-text"></span><span id="stat-date-subtext"></span><span id="stat-matches-count"></span></div>
       <div class="filter-panel"><div class="basic-filters">          <!-- 2. Date Selection (With Tactile Quick Pills & Native Picker) -->
           <div>
-            <div class="flex items-center justify-between mb-1.5">
+            <div class="date-filter-heading flex items-center justify-between mb-1.5">
               <label class="text-[10px] font-bold uppercase tracking-widest text-athletic-dim flex items-center gap-1">
                 <i class="fa-regular fa-calendar-days text-athletic-volt"></i>
                 <span>Date</span>
               </label>
               <!-- Tactile Quick Pill Selectors -->
-              <div class="flex items-center gap-1">
-                <button type="button" id="btn-quick-sat" onclick="setQuickDate('sat')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-slate-300 transition cursor-pointer">This Sat</button>
-                <button type="button" id="btn-quick-sun" onclick="setQuickDate('sun')" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-slate-300 transition cursor-pointer">This Sun</button>
-                <button type="button" id="btn-quick-all" onclick="clearDateFilter()" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-athletic-volt text-black transition cursor-pointer">All</button>
+              <div class="quick-date-buttons" role="group" aria-label="Quick weekend date filters">
+                <button type="button" id="btn-quick-sat" onclick="setQuickDate('sat')" class="font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-slate-300 transition cursor-pointer">This Sat</button>
+                <button type="button" id="btn-quick-sun" onclick="setQuickDate('sun')" class="font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-slate-300 transition cursor-pointer">This Sun</button>
+                <button type="button" id="btn-quick-all" onclick="clearDateFilter()" class="font-bold uppercase tracking-wider bg-athletic-volt text-black transition cursor-pointer">All dates</button>
               </div>
             </div>
             <div class="relative">
@@ -776,12 +780,14 @@
       const btnSun = document.getElementById('btn-quick-sun');
       const btnAll = document.getElementById('btn-quick-all');
 
-      const inactive = 'px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-slate-300 transition cursor-pointer';
-      const active = 'px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-athletic-volt text-black transition cursor-pointer';
+      const inactive = 'font-bold uppercase tracking-wider bg-white/5 hover:bg-white/10 text-slate-300 transition cursor-pointer';
+      const active = 'font-bold uppercase tracking-wider bg-athletic-volt text-black transition cursor-pointer';
 
-      if (btnSat) btnSat.className = activeType === 'sat' ? active : inactive;
-      if (btnSun) btnSun.className = activeType === 'sun' ? active : inactive;
-      if (btnAll) btnAll.className = activeType === 'all' ? active : inactive;
+      for (const [button, day] of [[btnSat,'sat'],[btnSun,'sun'],[btnAll,'all']]) {
+        if (!button) continue;
+        button.className = activeType === day ? active : inactive;
+        button.setAttribute('aria-pressed', String(activeType === day));
+      }
     }
 
     function setQuickDate(dayType) {
@@ -996,8 +1002,14 @@
         return (a.venueName || '') < (b.venueName || '') ? -1 : 1;
       });
 
-      const matchedGroups = groupVenueOpenings(matched);
-      const outsideGroups = groupVenueOpenings(outsideRange);
+      const cityPriority = city => ({bacoor:0,imus:1,kawit:2})[cityKey(city)] ?? 3;
+      const bacoorFirst = (a,b) =>
+        cityPriority(a.slots[0].municipality) - cityPriority(b.slots[0].municipality) ||
+        (a.slots[0].dateIso || '').localeCompare(b.slots[0].dateIso || '') ||
+        slotMinutes(a.slots[0]) - slotMinutes(b.slots[0]) ||
+        (a.slots[0].venueName || '').localeCompare(b.slots[0].venueName || '');
+      const matchedGroups = groupVenueOpenings(matched).sort(bacoorFirst);
+      const outsideGroups = groupVenueOpenings(outsideRange).sort(bacoorFirst);
       document.getElementById('stat-matches-count').innerText = matchedGroups.length;
       document.getElementById('results-count-badge').innerText = matchedGroups.length;
 
