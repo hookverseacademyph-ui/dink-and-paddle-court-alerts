@@ -8,9 +8,12 @@ const parse = value => JSON.parse(new TextDecoder().decode(decode(value)));
 let keysCache;
 
 export async function accountKey(request, env, fetchKeys=fetch, now=Date.now()) {
-  const issuer=String(env.ACCESS_ISSUER||'').replace(/\/$/,'');
-  if(!/^https:\/\/[a-z0-9-]+\.cloudflareaccess\.com$/.test(issuer) || !env.ACCESS_AUD)
-    throw fail(503,'Account favorites are not configured yet.');
+  const issuer=String(env.ACCESS_ISSUER||'').trim().replace(/\/$/,'');
+  const audience=String(env.ACCESS_AUD||'').trim();
+  if(!/^https:\/\/[a-z0-9-]+\.cloudflareaccess\.com$/.test(issuer))
+    throw fail(503,'Account favorites setup: ACCESS_ISSUER is missing or invalid in this deployment.');
+  if(!audience)
+    throw fail(503,'Account favorites setup: ACCESS_AUD is missing in this deployment.');
   const token=request.headers.get('Cf-Access-Jwt-Assertion')||'';
   if(token.length>20000)throw fail(401,'Please sign in again.');
   let header,claims,parts;
@@ -18,7 +21,7 @@ export async function accountKey(request, env, fetchKeys=fetch, now=Date.now()) 
   catch {throw fail(401,'Please sign in again.');}
   const seconds=now/1000;
   if(header.alg!=='RS256' || !header.kid || claims.iss!==issuer || !Array.isArray(claims.aud) ||
-    !claims.aud.includes(env.ACCESS_AUD) || !Number.isFinite(claims.exp) || claims.exp<=seconds ||
+    !claims.aud.includes(audience) || !Number.isFinite(claims.exp) || claims.exp<=seconds ||
     (claims.nbf!==undefined && (!Number.isFinite(claims.nbf) || claims.nbf>seconds)) ||
     !Number.isFinite(claims.iat) || claims.iat>seconds+60 || !claims.sub || typeof claims.email!=='string')
     throw fail(401,'Please sign in again.');
