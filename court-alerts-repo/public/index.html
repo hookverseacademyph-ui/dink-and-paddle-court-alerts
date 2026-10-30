@@ -96,6 +96,7 @@
     .google-maps-link { color:#a3b8cd; text-decoration:none; }
     .google-maps-link:hover { color:#fff; }
     .google-maps-link:focus-visible { outline:2px solid #ccff00; outline-offset:2px; border-radius:6px; }
+    #favorites-status { color:#8793a8; font-size:11px; } #feed-check-details { margin-top:8px; font-size:11px; color:#a3b8cd; } #feed-check-copy { white-space:pre-line; margin-top:8px; } .favorite-button:disabled { opacity:.45; cursor:wait; }
     #toast-container { width:calc(100% - 32px); right:16px; bottom:16px; } main, section { min-width:0; } #tab-explorer, #tab-comparison, #tab-telegram, #tab-logger { overflow-wrap:anywhere; } footer { font-size:11px; }
     @media(max-width:900px) { .header-inner { gap:10px; padding:12px 20px; } .brand { font-size:16px; } .secondary-menu { margin-left:auto; order:0; } .main-nav { width:100%; margin-left:0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; } .main-nav button { padding:10px 4px; font-size:12px; } }
     @media(max-width:540px) { .header-inner { padding:10px 16px; } .feed-intro { display:block; } .feed-intro h1 { font-size:24px; } .area-note { display:none; } .feed-intro p { font-size:12px; } .feed-status { align-items:stretch; flex-direction:column; gap:12px; } #check-now-btn { align-self:flex-start; } .filter-panel { padding:16px; } .basic-filters,.advanced-grid { grid-template-columns:1fr; gap:18px; } .filter-options { flex-direction:column; align-items:flex-start; gap:6px; } .filter-options button { margin-left:0; min-height:44px; } .court-card { padding:18px; } .court-session strong { font-size:16px; } #tab-dashboard > .space-y-4 > .flex { flex-wrap:wrap; gap:8px; } .settings-panel h1 { font-size:24px; } }
@@ -142,7 +143,7 @@
     <section id="tab-dashboard" class="space-y-6">
 
       <div class="feed-intro"><div><h1>Available courts</h1><p>Sat–Sun · 4–10 PM · Minimum 2 hours</p></div><span class="area-note">Bacoor · Imus · Kawit</span></div>
-      <div id="live-bar" class="feed-status"><div class="status-copy"><div class="status-heading"><span id="live-dot" class="w-2 h-2 rounded-full bg-athletic-dim"></span><span id="live-text">Loading availability…</span></div><p id="scrape-status">Auto-check every 30 minutes</p></div><button id="check-now-btn" onclick="triggerManualCheck()"><i id="refresh-icon" class="fa-solid fa-rotate"></i> Check now</button></div>
+      <div id="live-bar" class="feed-status"><div class="status-copy"><div class="status-heading"><span id="live-dot" class="w-2 h-2 rounded-full bg-athletic-dim"></span><span id="live-text">Loading availability…</span></div><p id="scrape-status" role="status" aria-live="polite">Auto-check every 30 minutes</p><details id="feed-check-details" hidden><summary>Check details</summary><p id="feed-check-copy"></p></details></div><button id="check-now-btn" onclick="triggerManualCheck()"><i id="refresh-icon" class="fa-solid fa-rotate"></i> Check now</button></div>
       <div hidden aria-hidden="true"><span id="stat-zone-text"></span><span id="stat-budget-text"></span><span id="stat-schedule-text"></span><span id="stat-date-subtext"></span><span id="stat-matches-count"></span></div>
       <div class="filter-panel"><div class="basic-filters">          <!-- 2. Date Selection (With Tactile Quick Pills & Native Picker) -->
           <div>
@@ -199,7 +200,7 @@
             </div>
           </div>
 </div>
-      <div class="filter-options"><label><input type="checkbox" id="filter-favorites-only" onchange="applyFilters()"> Favorites only</label><label><input type="checkbox" id="show-all-days" onchange="applyFilters()"> All downloaded dates / hours</label><button onclick="resetFilters()">Reset filters</button></div>        <!-- NEW: Environment & Amenity Filter Pills Strip -->
+      <div class="filter-options"><label><input type="checkbox" id="filter-favorites-only" onchange="applyFilters()"> Favorites only</label><span id="favorites-status" role="status" aria-live="polite">Loading account favorites…</span><label><input type="checkbox" id="show-all-days" onchange="applyFilters()"> All downloaded dates / hours</label><button onclick="resetFilters()">Reset filters</button></div>        <!-- NEW: Environment & Amenity Filter Pills Strip -->
         <div class="pt-3 border-t border-athletic-border flex flex-wrap items-center justify-between gap-3 text-xs">
           <div class="flex flex-wrap items-center gap-2">
             <span class="text-[10px] uppercase font-bold tracking-widest text-athletic-dim flex items-center gap-1">
@@ -556,6 +557,51 @@
       return `${Math.round(hrs / 24)} day(s) ago`;
     }
 
+    let accountFavorites = new Set(), favoritesReady=false;
+    const savingFavorites=new Set();
+    function favoriteVenueId(slot) { try{return new URL(slot.bookingUrl).pathname.split('/').pop();}catch{return '';} }
+    function applyAccountFavorites() {
+      for(const slot of [...courtSlots,...liveOpenings]) slot.favorite=accountFavorites.has(favoriteVenueId(slot));
+    }
+    async function loadAccountFavorites() {
+      try {
+        const res=await fetch('/api/favorites',{cache:'no-store',credentials:'same-origin'});
+        if(!res.ok)throw Error();
+        const data=await res.json();if(!Array.isArray(data.favorites))throw Error();
+        accountFavorites=new Set(data.favorites);favoritesReady=true;applyAccountFavorites();
+        document.getElementById('favorites-status').textContent='Favorites saved to your account';
+      }catch{
+        favoritesReady=false;
+        document.getElementById('favorites-status').textContent='Account favorites unavailable · Retry with Check now';
+      }
+    }
+    async function saveAccountFavorite(slot) {
+      const id=favoriteVenueId(slot);
+      if(!favoritesReady || savingFavorites.has(id))return;
+      const next=!accountFavorites.has(id);savingFavorites.add(id);renderSlots();
+      try {
+        const res=await fetch('/api/favorites',{method:'PUT',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({venueId:id,favorite:next})});
+        if(!res.ok)throw Error();
+        if(next)accountFavorites.add(id);else accountFavorites.delete(id);
+        applyAccountFavorites();document.getElementById('favorites-status').textContent='Favorites saved to your account';
+      }catch {document.getElementById('favorites-status').textContent='Could not save favorite · Please retry';}
+      finally {savingFavorites.delete(id);applyFilters();renderComparisonTable();}
+    }
+    let lastFeedResult=null;
+    const CLOUD_VENUE_NAMES = {"5812c8bc-dfe5-4e9f-9b7f-59da95a76efb": "PCKLD.", "fbc00051-e9e1-4ecd-a39f-89ac01a30aaa": "The Pickle Prime - Bacoor", "cb5e7b37-1719-4a18-963e-06c02ff3d448": "Garahe Pickleball Court", "0cde9299-793e-40ce-a1a2-7c1d374d542c": "Assenda", "af6cb5a6-7262-4502-9f65-b35de3a026f1": "Dink ‘n Smash", "eec48bf0-423a-4824-bc9a-61fa57d672d6": "The Court BLVD", "d5c4c969-3ea4-434a-8d89-3a14e44d03b6": "Courthaus"};
+    function renderFeedCheckStatus(data, count) {
+      lastFeedResult={data,count};
+      const failed=data.failedVenues||[];
+      const checked=new Date(data.updatedAt).toLocaleString('en-PH',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Manila'});
+      updateLiveBar(failed.length?'error':'live', `${count} verified 2-hour slots · ${data.hubsChecked}/7 venues checked`);
+      document.getElementById('scrape-status').textContent=`Last checked: ${checked} PHT · Auto-check every 30 minutes`+(failed.length?` · ${failed.length} could not be checked`:'');
+      const details=document.getElementById('feed-check-details');details.hidden=false;
+      document.getElementById('feed-check-copy').textContent=[
+        'Availability checked as of '+checked+' PHT. Recent checks can be reused for up to 2 minutes.',
+        failed.length?'Not checked (not counted as unavailable):\n'+failed.map(v=>(CLOUD_VENUE_NAMES[v.id]||'Venue')+' — '+v.reason).join('\n'):'All 7 venues checked successfully.',
+        !count?'No verified sessions matched the current check.':''
+      ].filter(Boolean).join('\n\n');
+    }
     const CLOUD_VENUES = ["5812c8bc-dfe5-4e9f-9b7f-59da95a76efb", "fbc00051-e9e1-4ecd-a39f-89ac01a30aaa", "cb5e7b37-1719-4a18-963e-06c02ff3d448", "0cde9299-793e-40ce-a1a2-7c1d374d542c", "af6cb5a6-7262-4502-9f65-b35de3a026f1", "eec48bf0-423a-4824-bc9a-61fa57d672d6", "d5c4c969-3ea4-434a-8d89-3a14e44d03b6"];
     let cloudRequest = null;
     function loadCloudFeed() {
@@ -583,7 +629,7 @@
           results.push(...batch.filter(Boolean));
         }
         if(!results.length)throw new Error('No venue responded: '+(failed[0]?.reason||'connection failed'));
-        return {verificationVersion:2,updatedAt:new Date().toISOString(),hubsChecked:results.length,failedVenues:failed,
+        return {verificationVersion:2,updatedAt:new Date(Math.min(...results.map(r=>Date.parse(r.updatedAt)))).toISOString(),hubsChecked:results.length,failedVenues:failed,
           daysAhead:14,openings:results.flatMap(r=>r.openings),verifiedVenues:results.flatMap(r=>r.verifiedVenues||[])};
       })().finally(()=>{cloudRequest=null;});
       return cloudRequest;
@@ -616,7 +662,7 @@
           distanceKm: slot.distanceKm ?? null,
           capacity: slot.capacity ?? null,
           status: slot.status || 'Available',
-          favorite: slot.favorite === true,
+          favorite: accountFavorites.has(favoriteVenueId(slot)),
           bookingUrl: slot.bookingUrl || 'https://app.sports360.ph/public-court-rental',
           facebookUrl: slot.facebookUrl || '',
           environment: slot.environment || '',
@@ -642,12 +688,15 @@
         }
         const priorityCount = liveOpenings.filter(slot => [0, 6].includes(new Date(slot.dateIso + 'T00:00:00Z').getUTCDay()) && isPriorityTime(slot)).length;
         updateLiveBar('live', `360 Sports: ${priorityCount} Sat/Sun 4–10 PM two-hour slots (${liveOpenings.length} total) - scraped ${describeLiveAge(liveUpdatedAt)}`);
-        if(data.failedVenues?.length)updateLiveBar('error', `${liveOpenings.length} verified slots from ${data.hubsChecked}/7 venues · ${data.failedVenues.length} venues could not be checked; retry Check now`);
+        renderFeedCheckStatus(data,liveOpenings.length);
         if (showMessage) showToast(`Loaded ${liveOpenings.length} live openings from 360 Sports`);
         return true;
       } catch (error) {
         courtSlots = []; liveOpenings = []; clearTimeout(liveExpiryTimer);
-        updateLiveBar('error', 'Live check failed: '+error.message+' · No unverified slots shown');
+        lastFeedResult=null;
+        updateLiveBar('error', 'Live check failed · Availability could not be verified');
+        document.getElementById('scrape-status').textContent='Last attempt: '+new Date().toLocaleTimeString('en-PH',{timeZone:'Asia/Manila'})+' PHT · '+error.message;
+        document.getElementById('feed-check-details').hidden=true;
         if (showMessage) showToast('No verified live results. Please use Check now.');
         return false;
       }
@@ -1083,21 +1132,16 @@
       card.querySelector('.telegram-button').addEventListener('click', () => dispatchDirectTelegramAlert(selected.id));
       card.querySelector('.share-slot').addEventListener('click', () => shareToMessenger(selected.id));
       card.querySelector('.set-facebook').addEventListener('click', () => setVenueFacebookPage(selected.id));
-      card.querySelector('.favorite-button').addEventListener('click', () => {
-        group.slots.forEach(slot => { slot.favorite = !anyFavorite; }); renderSlots();
-      });
+      const favoriteButton=card.querySelector('.favorite-button');
+      favoriteButton.disabled=!favoritesReady || savingFavorites.has(favoriteVenueId(first));
+      favoriteButton.setAttribute('aria-pressed',String(anyFavorite));
+      favoriteButton.title=favoritesReady?'Save to your account':'Account favorites unavailable';
+      favoriteButton.addEventListener('click',()=>saveAccountFavorite(first));
       updateSelection();
       return card;
     }
 
-    function toggleFavorite(slotId) {
-      const slot = courtSlots.find(s => s.id === slotId);
-      if (slot) {
-        slot.favorite = !slot.favorite;
-        renderSlots();
-        showToast(slot.favorite ? `Saved to circuit favorites` : `Removed from favorites`);
-      }
-    }
+    function toggleFavorite(slotId) { const slot=courtSlots.find(s=>s.id===slotId); if(slot)saveAccountFavorite(slot); }
 
     /* ============================================================
        DIRECTORY & MATRIX TABLES (WITH ATTRIBUTE BADGES)
@@ -1292,10 +1336,8 @@
       document.getElementById('refresh-icon').classList.add('fa-spin');
       document.getElementById('scrape-status').innerText='Checking live availability…';
       try {
-        const loaded=await loadLiveOpenings(false);applyFilters();renderComparisonTable();
-        document.getElementById('scrape-status').innerText=loaded
-          ? 'Auto-check every 30 minutes · Recent checks may be reused for up to 2 minutes · Minimum 2 continuous hours'
-          : 'Live check unavailable. Please try Check now again shortly.';
+        await loadAccountFavorites();
+        await loadLiveOpenings(false);applyFilters();renderComparisonTable();
       } finally {
         btn.disabled=false;document.getElementById('refresh-icon').classList.remove('fa-spin');
       }
@@ -1376,7 +1418,7 @@
       window.addEventListener('online', triggerManualCheck);
       document.getElementById('scrape-status').innerText='Auto-check every 30 minutes · 14 days ahead · Minimum 2 continuous hours';
       /* The live file arrives after the first draw, so redraw once it is in. */
-      loadLiveOpenings(false).then(() => {
+      loadAccountFavorites().then(()=>loadLiveOpenings(false)).then(() => {
         applyFilters();
         renderVenuesDirectory();
         renderComparisonTable();

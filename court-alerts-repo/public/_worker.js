@@ -1,3 +1,4 @@
+import { favorites } from './_account.js';
 import { VENUES, scrapeVenue } from './_scraper.js';
 
 const json = (body, status = 200) => new Response(JSON.stringify(body), {
@@ -7,6 +8,7 @@ const json = (body, status = 200) => new Response(JSON.stringify(body), {
 export async function handle(request, env, ctx, scrape = scrapeVenue, cache = globalThis.caches?.default) {
   const url = new URL(request.url);
   if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
+  if (url.pathname === '/api/favorites') return favorites(request, env);
   if (url.pathname !== '/api/venue') return json({ error: 'Not found' }, 404);
   if (request.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
   const id = url.searchParams.get('hub');
